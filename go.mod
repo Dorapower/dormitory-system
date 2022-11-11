@@ -3,7 +3,6 @@ module dormitory-system
 go 1.19
 
 require (
-	github.com/appleboy/gin-jwt/v2 v2.9.0
 	github.com/gin-gonic/gin v1.8.1
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	gorm.io/driver/mysql v1.4.3
