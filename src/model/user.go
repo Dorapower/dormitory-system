@@ -14,8 +14,3 @@ type User struct {
 	Remarks     string
 	Status      int
 }
-
-// TableName 将表名重写为user，因为gorm约定的为复数形式即users
-func (User) TableName() string {
-	return "user"
-}
