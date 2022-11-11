@@ -1,36 +1,49 @@
 package auth
 
 import (
-	jwt "github.com/appleboy/gin-jwt/v2"
+	"dormitory-system/src/model"
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"net/http"
 )
 
 func LoginHandler(ctx *gin.Context) {
 	// TODO: login
-}
-func checkLogin(_ Login) bool {
-	// TODO: check login
-	return true
-}
-
-func Authenticate(ctx *gin.Context) (user interface{}, err error) {
-	// check login request and return user info
 	var login Login
-	if err = ctx.ShouldBind(&login); err != nil {
-		return nil, jwt.ErrMissingLoginValues
+	var user model.User
+	if err := ctx.MustBindWith(&login, binding.JSON); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error_code": 1,
+			"message":    "missing username or password",
+			"data":       gin.H{},
+		})
 	}
-	if checkLogin(login) {
-		return login.Username, nil
-	} else {
-		return nil, jwt.ErrFailedAuthentication
+	if user = checkLogin(login); user == (model.User{}) {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error_code": 2,
+			"message":    "wrong username or password",
+			"data":       gin.H{},
+		})
 	}
+	token, refreshToken, err := generateTokenPair(&user)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error_code": 3,
+			"message":    "server error when generating tokens",
+			"data":       gin.H{},
+		})
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"error_code": 0,
+		"message":    "login success",
+		"data": gin.H{
+			"token":         token,
+			"refresh_token": refreshToken,
+			"expires_in":    300,
+		},
+	})
 }
-
-func Authorize(data interface{}, _ *gin.Context) bool {
-	// check user info and return whether the user is authorized
-	if _, ok := data.(string); ok {
-		return true
-	} else {
-		return false
-	}
+func checkLogin(_ Login) model.User {
+	// TODO: check login
+	return model.User{}
 }
