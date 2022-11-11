@@ -5,6 +5,9 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func LoginHandler(ctx *gin.Context) {
+	// TODO: login
+}
 func checkLogin(_ Login) bool {
 	// TODO: check login
 	return true
