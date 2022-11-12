@@ -1,10 +1,12 @@
 package cache
 
 import (
-	"dormitory-system/src/auth"
 	"dormitory-system/src/database"
 	"strconv"
+	"time"
 )
+
+const RefreshTokenDuration = time.Hour * 24 * 7
 
 func SetRefreshTokenCache(rToken string, uId int) error {
 	var redisDb = database.RedisDb
@@ -12,7 +14,7 @@ func SetRefreshTokenCache(rToken string, uId int) error {
 	// e.g.  refresh_token_1
 	key := "refresh_token_" + strconv.Itoa(uId)
 
-	err := redisDb.Set(key, rToken, auth.RefreshTokenDuration).Err()
+	err := redisDb.Set(key, rToken, RefreshTokenDuration).Err()
 	if err != nil {
 		return err
 	}
