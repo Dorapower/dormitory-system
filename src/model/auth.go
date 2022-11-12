@@ -36,7 +36,10 @@ func CheckAuth(username, password string, type_ int) User {
 		return User{}
 	}
 
-	return getUserByUid(auth.Uid)
+	var user User
+	user = getUserByUid(auth.Uid)
+	//	user.updateLastLogin()
+	return user
 }
 
 // generate a salt
