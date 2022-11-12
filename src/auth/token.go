@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const RefreshTokenDuration = time.Hour * 24 * 7
+
 func generateTokenPair(data *model.User) (string, string, error) {
 	// Create the token
 	token := jwt.New(jwt.SigningMethodHS256)
@@ -27,7 +29,7 @@ func generateTokenPair(data *model.User) (string, string, error) {
 	// Set some claims
 	refreshClaims := refreshToken.Claims.(jwt.MapClaims)
 	refreshClaims["uid"] = data.Uid
-	refreshClaims["exp"] = time.Now().Add(time.Hour * 24 * 7).Unix()
+	refreshClaims["exp"] = time.Now().Add(RefreshTokenDuration).Unix()
 
 	// Sign and get the complete encoded token as a string
 	refreshTokenString, err := refreshToken.SignedString([]byte("secret"))
