@@ -7,6 +7,7 @@ import (
 )
 
 func main() {
+	database.ConnectRedis()
 	database.ConnectMysql()
 	err := router.InitRouter().Run(":8090")
 	if err != nil {
