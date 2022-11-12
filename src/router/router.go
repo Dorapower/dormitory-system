@@ -12,7 +12,7 @@ func InitRouter() *gin.Engine {
 	})
 	api := router.Group("/api")
 	api.POST("/auth/login", auth.LoginHandler)
-	api.GET("/auth/refresh_token", auth.RefreshHandler)
+	api.POST("/auth/refresh_token", auth.RefreshHandler)
 
 	return router
 }

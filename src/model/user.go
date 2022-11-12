@@ -17,7 +17,7 @@ type User struct {
 	Status      int
 }
 
-func getUserByUid(uid int) (user User) {
+func GetUserByUid(uid int) (user User) {
 	var db = database.MysqlDb
 	db.Where("uid = ?", uid).First(&user)
 	return

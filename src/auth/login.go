@@ -17,6 +17,7 @@ func LoginHandler(ctx *gin.Context) {
 			"message":    "missing username or password",
 			"data":       gin.H{},
 		})
+		return
 	}
 	if user = checkLogin(login); user == (model.User{}) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -24,6 +25,7 @@ func LoginHandler(ctx *gin.Context) {
 			"message":    "wrong username or password",
 			"data":       gin.H{},
 		})
+		return
 	}
 	token, refreshToken, err := generateTokenPair(&user)
 	if err != nil {
@@ -32,6 +34,7 @@ func LoginHandler(ctx *gin.Context) {
 			"message":    "server error when generating tokens",
 			"data":       gin.H{},
 		})
+		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"error_code": 0,
@@ -39,9 +42,10 @@ func LoginHandler(ctx *gin.Context) {
 		"data": gin.H{
 			"token":         token,
 			"refresh_token": refreshToken,
-			"expires_in":    300,
+			"expires_in":    TokenDuration.Seconds(),
 		},
 	})
+	return
 }
 func checkLogin(login Login) model.User {
 	user := model.CheckAuth(login.Username, login.Password, login.Type)

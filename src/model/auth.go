@@ -37,7 +37,7 @@ func CheckAuth(username, password string, type_ int) User {
 	}
 
 	var user User
-	user = getUserByUid(auth.Uid)
+	user = GetUserByUid(auth.Uid)
 	//	user.updateLastLogin()
 	return user
 }
