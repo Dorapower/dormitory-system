@@ -5,7 +5,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"net/http"
-	"strconv"
 )
 
 func LoginHandler(ctx *gin.Context) {
@@ -45,8 +44,6 @@ func LoginHandler(ctx *gin.Context) {
 	})
 }
 func checkLogin(login Login) model.User {
-	// TODO: check login
-	type_, _ := strconv.Atoi(login.Type)
-	user := model.CheckAuth(login.Username, login.Password, type_)
+	user := model.CheckAuth(login.Username, login.Password, login.Type)
 	return user
 }
