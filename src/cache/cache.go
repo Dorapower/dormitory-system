@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-const RefreshTokenDuration = time.Hour * 24 * 7
+const CatchExpireTime = time.Hour * 24 * 7
 
 func SetRefreshTokenCache(rToken string, uId int) error {
 	var redisDb = database.RedisDb
@@ -14,7 +14,7 @@ func SetRefreshTokenCache(rToken string, uId int) error {
 	// e.g.  refresh_token_1
 	key := "refresh_token_" + strconv.Itoa(uId)
 
-	err := redisDb.Set(key, rToken, RefreshTokenDuration).Err()
+	err := redisDb.Set(key, rToken, CatchExpireTime).Err()
 	if err != nil {
 		return err
 	}
