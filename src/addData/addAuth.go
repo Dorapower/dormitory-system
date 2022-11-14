@@ -7,6 +7,7 @@ import (
 	"encoding/hex"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"log"
 	"math/rand"
 	"net/http"
 	"time"
@@ -16,7 +17,7 @@ import (
 func getSalt() string {
 	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 	bytes := []byte(str)
-	result := []byte{}
+	var result []byte
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 	for i := 0; i < 10; i++ {
 		result = append(result, bytes[r.Intn(len(bytes))])
@@ -36,7 +37,15 @@ func getPwd(str, salt string) string {
 
 func AddAuth(ctx *gin.Context) {
 	var auth Auth
-	ctx.MustBindWith(&auth, binding.JSON)
+	err := ctx.MustBindWith(&auth, binding.JSON)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code": 400,
+			"msg":  "参数错误",
+		})
+		return
+	}
 	db := database.MysqlDb
 	salt := getSalt()
 	var authInfo = model.Auth{

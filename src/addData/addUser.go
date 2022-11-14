@@ -5,13 +5,22 @@ import (
 	"dormitory-system/src/model"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"log"
 	"net/http"
 	"time"
 )
 
 func AddUser(ctx *gin.Context) {
 	var user User
-	ctx.MustBindWith(&user, binding.JSON)
+	err := ctx.MustBindWith(&user, binding.JSON)
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code": 400,
+			"msg":  "参数错误",
+		})
+		return
+	}
 	db := database.MysqlDb
 	var userInfo = model.User{
 		Name:        user.Name,
