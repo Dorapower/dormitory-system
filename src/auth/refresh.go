@@ -27,10 +27,18 @@ func RefreshHandler(ctx *gin.Context) {
 		}
 		return []byte("secret"), nil
 	})
+	if err != nil {
+		ctx.JSON(400, gin.H{
+			"error_code": 2,
+			"message":    "invalid token",
+			"data":       gin.H{},
+		})
+		return
+	}
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		if time.Unix(claims["exp"].(int64), 0).Before(time.Now()) {
 			ctx.JSON(400, gin.H{
-				"error_code": 2,
+				"error_code": 3,
 				"message":    "refresh token expired",
 				"data":       gin.H{},
 			})
@@ -38,7 +46,7 @@ func RefreshHandler(ctx *gin.Context) {
 		}
 		if claims["uid"] == nil {
 			ctx.JSON(400, gin.H{
-				"error_code": 3,
+				"error_code": 4,
 				"message":    "invalid refresh token",
 				"data":       gin.H{},
 			})
@@ -46,7 +54,7 @@ func RefreshHandler(ctx *gin.Context) {
 		}
 		if cache.GetRefreshTokenCache(claims["uid"].(int)) != refreshRequest.RefreshToken {
 			ctx.JSON(400, gin.H{
-				"error_code": 4,
+				"error_code": 5,
 				"message":    "invalid refresh token",
 				"data":       gin.H{},
 			})
@@ -56,7 +64,7 @@ func RefreshHandler(ctx *gin.Context) {
 		tokenString, refreshTokenString, err := generateTokenPair(&user)
 		if err != nil {
 			ctx.JSON(400, gin.H{
-				"error_code": 5,
+				"error_code": 6,
 				"message":    "failed to generate token pair",
 				"data":       gin.H{},
 			})
@@ -76,7 +84,7 @@ func RefreshHandler(ctx *gin.Context) {
 		}
 	} else {
 		ctx.JSON(400, gin.H{
-			"error_code": 6,
+			"error_code": 7,
 			"message":    "invalid refresh token",
 			"data":       gin.H{},
 		})
