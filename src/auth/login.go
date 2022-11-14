@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"dormitory-system/src/cache"
 	"dormitory-system/src/model"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
@@ -32,6 +33,15 @@ func LoginHandler(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"error_code": 3,
 			"message":    "server error when generating tokens",
+			"data":       gin.H{},
+		})
+		return
+	}
+	err = cache.SetRefreshTokenCache(refreshToken, user.Uid)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"error_code": 4,
+			"message":    "server error when caching refresh token",
 			"data":       gin.H{},
 		})
 		return
