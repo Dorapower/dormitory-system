@@ -3,18 +3,18 @@ package model
 import "dormitory-system/src/database"
 
 type User struct {
-	Uid         int `gorm:"primaryKey"`
+	Uid         int `gorm:"primaryKey;autoIncrement"`
 	Name        string
 	Gender      int
 	Email       string `gorm:"default:NULL"`
 	Mobile      string `gorm:"default:NULL"`
-	Type        int
+	Type        int    `gorm:"default:1"`
 	AddedAt     int
 	DeletedAt   int    `gorm:"default:NULL"`
 	DeniedAt    int    `gorm:"default:NULL"`
 	LastLoginAt int    `gorm:"default:NULL"`
 	Remarks     string `gorm:"default:NULL"`
-	Status      int
+	Status      int    `gorm:"default:0"`
 }
 
 func GetUserByUid(uid int) (user User) {

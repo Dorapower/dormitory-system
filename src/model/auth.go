@@ -4,13 +4,11 @@ import (
 	"crypto/md5"
 	"dormitory-system/src/database"
 	"encoding/hex"
-	"math/rand"
-	"time"
 )
 
 type Auth struct {
-	Aid       int `gorm:"primaryKey"`
-	Type      int
+	Aid       int `gorm:"primaryKey;autoIncrement"`
+	Type      int `gorm:"default:0"`
 	Username  string
 	Password  string
 	Salt      string
@@ -18,7 +16,7 @@ type Auth struct {
 	AddedAt   int
 	DeletedAt int    `gorm:"default:NULL"`
 	Remarks   string `gorm:"default:NULL"`
-	Status    int
+	Status    int    `gorm:"default:0"`
 }
 
 func CheckAuth(username, password string, type_ int) User {
@@ -40,18 +38,6 @@ func CheckAuth(username, password string, type_ int) User {
 	user = GetUserByUid(auth.Uid)
 	//	user.updateLastLogin()
 	return user
-}
-
-// generate a salt
-func getSalt() string {
-	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-	bytes := []byte(str)
-	result := []byte{}
-	r := rand.New(rand.NewSource(time.Now().UnixNano()))
-	for i := 0; i < 10; i++ {
-		result = append(result, bytes[r.Intn(len(bytes))])
-	}
-	return string(result)
 }
 
 // get encrypted password
