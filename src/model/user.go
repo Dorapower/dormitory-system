@@ -6,14 +6,14 @@ type User struct {
 	Uid         int `gorm:"primaryKey"`
 	Name        string
 	Gender      int
-	Email       string
-	Mobile      string
+	Email       string `gorm:"default:NULL"`
+	Mobile      string `gorm:"default:NULL"`
 	Type        int
 	AddedAt     int
-	DeletedAt   int
-	DeniedAt    int
-	LastLoginAt int
-	Remarks     string
+	DeletedAt   int    `gorm:"default:NULL"`
+	DeniedAt    int    `gorm:"default:NULL"`
+	LastLoginAt int    `gorm:"default:NULL"`
+	Remarks     string `gorm:"default:NULL"`
 	Status      int
 }
 

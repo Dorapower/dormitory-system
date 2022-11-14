@@ -13,11 +13,11 @@ type Auth struct {
 	Type      int
 	Username  string
 	Password  string
-	salt      string
+	Salt      string
 	Uid       int
 	AddedAt   int
-	DeletedAt int
-	Remarks   string
+	DeletedAt int    `gorm:"default:NULL"`
+	Remarks   string `gorm:"default:NULL"`
 	Status    int
 }
 
@@ -32,7 +32,7 @@ func CheckAuth(username, password string, type_ int) User {
 	}
 
 	// password wrong
-	if auth.Password != getPwd(password, auth.salt) {
+	if auth.Password != getPwd(password, auth.Salt) {
 		return User{}
 	}
 
