@@ -2,7 +2,7 @@ package addData
 
 type Auth struct {
 	//Aid       int `gorm:"primaryKey"`
-	Type     int    `form:"type" json:"type"`
+	Type     int    `form:"type" json:"type" binding:"required"`
 	Username string `form:"username" json:"username" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
 	//Salt      string
@@ -10,7 +10,7 @@ type Auth struct {
 	//AddedAt   int
 	DeletedAt int    `form:"deletedAt" json:"deletedAt"`
 	Remarks   string `form:"remarks" json:"remarks"`
-	Status    int    `form:"status" json:"status" `
+	Status    int    `form:"status" json:"status" binding:"required"`
 }
 
 type User struct {
@@ -19,11 +19,11 @@ type User struct {
 	Gender int    `form:"gender" json:"gender" binding:"required"`
 	Email  string `form:"email" json:"email"`
 	Mobile string `form:"mobile" json:"mobile"`
-	Type   int    `form:"type" json:"type"`
+	Type   int    `form:"type" json:"type" binding:"required"`
 	//AddedAt     int
 	DeletedAt   int    `form:"deletedAt" json:"deletedAt"`
 	DeniedAt    int    `form:"deniedAt" json:"deniedAt"`
 	LastLoginAt int    `form:"lastLoginAt" json:"LastLoginAt"`
 	Remarks     string `form:"remarks" json:"remarks"`
-	Status      int    `form:"status" json:"status"`
+	Status      int    `form:"status" json:"status" binding:"required"`
 }
