@@ -3,18 +3,18 @@ package model
 import "dormitory-system/src/database"
 
 type User struct {
-	Uid         int `gorm:"primaryKey;autoIncrement"`
-	Name        string
-	Gender      int
-	Email       string `gorm:"default:NULL"`
-	Mobile      string `gorm:"default:NULL"`
-	Type        int    `gorm:"default:1"`
-	AddedAt     int
-	DeletedAt   int    `gorm:"default:NULL"`
-	DeniedAt    int    `gorm:"default:NULL"`
-	LastLoginAt int    `gorm:"default:NULL"`
-	Remarks     string `gorm:"default:NULL"`
-	Status      int    `gorm:"default:0"`
+	Uid           int `gorm:"primaryKey;autoIncrement"`
+	Name          string
+	Gender        int
+	Email         string
+	Tel           string
+	Type          int `gorm:"default:1"`
+	AddTime       int `gorm:"default:0"`
+	IsDeny        int `gorm:"default:0"`
+	LastLoginTime int `gorm:"default:0"`
+	Remarks       string
+	IsDel         int `gorm:"default:0"`
+	Status        int `gorm:"default:0"`
 }
 
 func GetUserByUid(uid int) (user User) {
@@ -26,7 +26,7 @@ func GetUserByUid(uid int) (user User) {
 // update last_login_at
 func (u *User) updateLastLogin() bool {
 	var db = database.MysqlDb
-	result := db.Model(User{}).Where("uid = ?", u.Uid).Update("last_login_at", u.LastLoginAt)
+	result := db.Model(User{}).Where("uid = ?", u.Uid).Update("last_login_at", u.LastLoginTime)
 	if result.Error != nil {
 		return false
 	}
