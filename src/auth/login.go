@@ -58,6 +58,6 @@ func LoginHandler(ctx *gin.Context) {
 	return
 }
 func checkLogin(login Login) model.User {
-	user := model.CheckAuth(login.Username, login.Password, login.Type)
+	user := model.CheckAuth(login.Username, login.Password) // delete type
 	return user
 }
