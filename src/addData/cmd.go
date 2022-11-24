@@ -1,29 +1,23 @@
 package addData
 
 type Auth struct {
-	//Aid       int `gorm:"primaryKey"`
-	Type     int    `form:"type" json:"type" binding:"required"`
 	Username string `form:"username" json:"username" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
-	//Salt      string
-	Uid int `form:"uid" json:"uid" binding:"required"`
-	//AddedAt   int
-	DeletedAt int    `form:"deletedAt" json:"deletedAt"`
-	Remarks   string `form:"remarks" json:"remarks"`
-	Status    int    `form:"status" json:"status" binding:"required"`
+	Uid      int    `form:"uid" json:"uid" binding:"required"`
+	Remarks  string `form:"remarks" json:"remarks" binding:"required"`
+	IsDel    int    `form:"is_del" json:"is_del"`
+	Status   int    `form:"status" json:"status"`
 }
 
 type User struct {
-	//Uid         int `gorm:"primaryKey"`
-	Name   string `form:"name" json:"name" binding:"required"`
-	Gender int    `form:"gender" json:"gender" binding:"required"`
-	Email  string `form:"email" json:"email"`
-	Mobile string `form:"mobile" json:"mobile"`
-	Type   int    `form:"type" json:"type" binding:"required"`
-	//AddedAt     int
-	DeletedAt   int    `form:"deletedAt" json:"deletedAt"`
-	DeniedAt    int    `form:"deniedAt" json:"deniedAt"`
-	LastLoginAt int    `form:"lastLoginAt" json:"LastLoginAt"`
-	Remarks     string `form:"remarks" json:"remarks"`
-	Status      int    `form:"status" json:"status" binding:"required"`
+	Name          string `form:"name" json:"name" binding:"required"`
+	Gender        int    `form:"gender" json:"gender" binding:"required"`
+	Email         string `form:"email" json:"email" binding:"required"`
+	Tel           string `form:"tel" json:"tel" binding:"required"`
+	Type          int    `form:"type" json:"type"`
+	IsDeny        int    `form:"is_deny" json:"is_deny"`
+	IsDel         int    `form:"is_del" json:"is_del"`
+	LastLoginTime int    `form:"last_login_time" json:"last_login_time"`
+	Remarks       string `form:"remarks" json:"remarks" binding:"required"`
+	Status        int    `form:"status" json:"status"`
 }

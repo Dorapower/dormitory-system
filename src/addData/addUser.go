@@ -23,17 +23,17 @@ func AddUser(ctx *gin.Context) {
 	}
 	db := database.MysqlDb
 	var userInfo = model.User{
-		Name:        user.Name,
-		Gender:      user.Gender,
-		Email:       user.Email,
-		Mobile:      user.Mobile,
-		Type:        user.Type,
-		AddedAt:     int(time.Now().Unix()),
-		DeletedAt:   user.DeletedAt,
-		DeniedAt:    user.DeniedAt,
-		LastLoginAt: user.LastLoginAt,
-		Remarks:     user.Remarks,
-		Status:      user.Status,
+		Name:          user.Name,
+		Gender:        user.Gender,
+		Email:         user.Email,
+		Tel:           user.Tel,
+		Type:          user.Type,
+		AddTime:       int(time.Now().Unix()),
+		IsDel:         user.IsDel,
+		IsDeny:        user.IsDeny,
+		LastLoginTime: user.LastLoginTime,
+		Remarks:       user.Remarks,
+		Status:        user.Status,
 	}
 	db.Create(&userInfo)
 	ctx.JSON(http.StatusOK, gin.H{

@@ -9,7 +9,6 @@ import (
 )
 
 func LoginHandler(ctx *gin.Context) {
-	// TODO: login
 	var login Login
 	var user model.User
 	if err := ctx.MustBindWith(&login, binding.JSON); err != nil {
