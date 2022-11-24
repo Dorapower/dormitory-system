@@ -14,6 +14,7 @@ type Beds struct {
 	Status   int `gorm:"default:0"`
 }
 
+// GetMyRoomByUid : get my room's name and roommates' name
 func GetMyRoomByUid(uid int) (roomName string, names []string) {
 	var db = database.MysqlDb
 

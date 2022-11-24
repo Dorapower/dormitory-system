@@ -10,6 +10,7 @@ type Class struct {
 	Status  int `gorm:"default:0"`
 }
 
+// GetClassName : get class's name for personal information api
 func GetClassName(id int) string {
 	var db = database.MysqlDb
 	var class Class

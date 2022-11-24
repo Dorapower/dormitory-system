@@ -16,8 +16,17 @@ type Room struct {
 	Status     int `gorm:"default:0"`
 }
 
-func GetRoomInfoById(id int) (room Room) {
+type RoomInfoApi struct {
+	name        string
+	gender      int
+	describe    string
+	image_url   string
+	building_id int
+}
+
+// GetRoomInfoById : get room's detailed information
+func GetRoomInfoById(id int) (rApi RoomInfoApi) {
 	var db = database.MysqlDb
-	db.First(&room, id)
+	db.Model(Room{}).Select("name", "gender", "describe", "image_url", "building_id").Where("id = ?", id).Scan(&rApi)
 	return
 }
