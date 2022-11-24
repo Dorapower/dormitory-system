@@ -2,7 +2,9 @@ package auth
 
 import (
 	"dormitory-system/src/model"
+	"fmt"
 	"github.com/golang-jwt/jwt/v4"
+	"os"
 	"time"
 )
 
@@ -19,7 +21,7 @@ func generateTokenPair(data *model.User) (string, string, error) {
 	claims["exp"] = time.Now().Add(TokenDuration).Unix()
 
 	// Sign and get the complete encoded token as a string
-	tokenString, err := token.SignedString([]byte("secret"))
+	tokenString, err := token.SignedString([]byte(os.Getenv("API_SECRET")))
 	if err != nil {
 		return "", "", err
 	}
@@ -39,4 +41,20 @@ func generateTokenPair(data *model.User) (string, string, error) {
 	}
 
 	return tokenString, refreshTokenString, nil
+}
+
+func ParseToken(tokenString string) (int, error) {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+		return []byte(os.Getenv("API_SECRET")), nil
+	})
+	if token.Valid && err == nil {
+		claims := token.Claims.(jwt.MapClaims)
+		uid := int(claims["uid"].(float64))
+		return uid, nil
+	} else {
+		return 0, err
+	}
 }
