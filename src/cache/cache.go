@@ -29,3 +29,12 @@ func GetRefreshTokenCache(uId int) string {
 	}
 	return rToken
 }
+
+func DeleteRefreshTokenCache(uId int) error {
+	var redisDb = database.RedisDb
+	err := redisDb.Del("refresh_token_" + strconv.Itoa(uId)).Err()
+	if err != nil {
+		return err
+	}
+	return nil
+}
