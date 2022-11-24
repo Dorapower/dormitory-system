@@ -2,7 +2,7 @@ package model
 
 import "dormitory-system/src/database"
 
-type Room struct {
+type Rooms struct {
 	ID         int `gorm:"primaryKey;autoIncrement"`
 	BuildingId int
 	Name       string
@@ -27,6 +27,6 @@ type RoomInfoApi struct {
 // GetRoomInfoById : get room's detailed information
 func GetRoomInfoById(id int) (rApi RoomInfoApi) {
 	var db = database.MysqlDb
-	db.Model(Room{}).Select("name", "gender", "describe", "image_url", "building_id").Where("id = ?", id).Scan(&rApi)
+	db.Model(Rooms{}).Select("name", "gender", "describe", "image_url", "building_id").Where("id = ?", id).Scan(&rApi)
 	return
 }
