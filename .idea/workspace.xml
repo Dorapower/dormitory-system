@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c2b5612b-873d-4ecb-9b18-8888186810c0" name="Changes" comment="adjust previous interfaces to adapt to requirement">
-      <change beforePath="$PROJECT_DIR$/src/addData/addAuth.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/addData/addAuth.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/model/auth.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/model/auth.go" afterDir="false" />
+    <list default="true" id="c2b5612b-873d-4ecb-9b18-8888186810c0" name="Changes" comment="maintain naming conventions">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -110,7 +110,8 @@
     <MESSAGE value="add some default value and remove binding requirement" />
     <MESSAGE value="fix more bugs" />
     <MESSAGE value="adjust previous interfaces to adapt to requirement" />
-    <option name="LAST_COMMIT_MESSAGE" value="adjust previous interfaces to adapt to requirement" />
+    <MESSAGE value="maintain naming conventions" />
+    <option name="LAST_COMMIT_MESSAGE" value="maintain naming conventions" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
