@@ -10,11 +10,11 @@ type Auth struct {
 	Username string
 	Password string
 	//Salt      string
-	Uid       int
-	AddedTime int `gorm:"default:0"`
-	Remarks   string
-	IsDel     int `gorm:"default:0"`
-	Status    int `gorm:"default:0"`
+	Uid     int
+	AddTime int `gorm:"default:0"`
+	Remarks string
+	IsDel   int `gorm:"default:0"`
+	Status  int `gorm:"default:0"`
 }
 
 func CheckAuth(username, password string) User { // delete type param

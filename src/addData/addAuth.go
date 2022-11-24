@@ -23,12 +23,12 @@ func AddAuth(ctx *gin.Context) {
 	}
 	db := database.MysqlDb
 	var authInfo = model.Auth{
-		Username:  auth.Username,
-		Password:  auth.Password,
-		Uid:       auth.Uid,
-		AddedTime: int(time.Now().Unix()),
-		Remarks:   auth.Remarks,
-		Status:    auth.Status,
+		Username: auth.Username,
+		Password: auth.Password,
+		Uid:      auth.Uid,
+		AddTime:  int(time.Now().Unix()),
+		Remarks:  auth.Remarks,
+		Status:   auth.Status,
 	}
 	db.Create(&authInfo)
 	ctx.JSON(http.StatusOK, gin.H{
