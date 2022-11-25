@@ -22,7 +22,7 @@ func AddUser(ctx *gin.Context) {
 		return
 	}
 	db := database.MysqlDb
-	var userInfo = model.User{
+	var userInfo = model.Users{
 		Name:          user.Name,
 		Gender:        user.Gender,
 		Email:         user.Email,

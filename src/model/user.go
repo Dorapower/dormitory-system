@@ -2,7 +2,7 @@ package model
 
 import "dormitory-system/src/database"
 
-type User struct {
+type Users struct {
 	Uid           int `gorm:"primaryKey;autoIncrement"`
 	Name          string
 	Gender        int
@@ -17,16 +17,16 @@ type User struct {
 	Status        int `gorm:"default:0"`
 }
 
-func GetUserByUid(uid int) (user User) {
+func GetUserByUid(uid int) (user Users) {
 	var db = database.MysqlDb
 	db.Where("uid = ?", uid).First(&user)
 	return
 }
 
 // update last_login_at
-func (u *User) updateLastLogin() bool {
+func (u *Users) updateLastLogin() bool {
 	var db = database.MysqlDb
-	result := db.Model(User{}).Where("uid = ?", u.Uid).Update("last_login_at", u.LastLoginTime)
+	result := db.Model(Users{}).Where("uid = ?", u.Uid).Update("last_login_at", u.LastLoginTime)
 	if result.Error != nil {
 		return false
 	}

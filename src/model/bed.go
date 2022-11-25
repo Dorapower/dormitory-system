@@ -27,7 +27,7 @@ func GetMyRoomByUid(uid int) (roomName string, names []string) {
 	db.Model(Rooms{}).Select("name").Where("id = ?", roomId).Scan(&roomName)
 
 	// get roommate's name
-	db.Model(User{}).Select("name").Where("uid IN (?)", db.Model(Beds{}).Select("uid").Where("room_id = ?", roomId)).Scan(&names)
+	db.Model(Users{}).Select("name").Where("uid IN (?)", db.Model(Beds{}).Select("uid").Where("room_id = ?", roomId)).Scan(&names)
 
 	return
 }
@@ -38,6 +38,7 @@ type EmptyBedsApi struct {
 	cnt         int
 }
 
+// GetEmptyBeds : get all empty beds grouped by building's id according to gender
 func GetEmptyBeds(gender int) (list []EmptyBedsApi) {
 	var db = database.MysqlDb
 

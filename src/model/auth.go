@@ -17,14 +17,14 @@ type Auth struct {
 	Status  int `gorm:"default:0"`
 }
 
-func CheckAuth(username, password string) User { // delete type param
+func CheckAuth(username, password string) Users { // delete type param
 	var db = database.MysqlDb
 	var auth Auth
 	result := db.Where("username = ? and password = ?", username, password).Find(&auth)
 
 	// gorm.ErrRecordNotFound
 	if result.Error != nil {
-		return User{}
+		return Users{}
 	}
 
 	// password wrong
@@ -32,7 +32,7 @@ func CheckAuth(username, password string) User { // delete type param
 	//	return User{}
 	//}
 
-	var user User
+	var user Users
 	user = GetUserByUid(auth.Uid)
 	user.updateLastLogin()
 	return user

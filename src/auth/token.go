@@ -11,7 +11,7 @@ import (
 const TokenDuration = time.Minute * 5
 const RefreshTokenDuration = time.Hour * 24 * 7
 
-func generateTokenPair(data *model.User) (string, string, error) {
+func generateTokenPair(data *model.Users) (string, string, error) {
 	// Create the token
 	token := jwt.New(jwt.SigningMethodHS256)
 

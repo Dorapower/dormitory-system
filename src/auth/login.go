@@ -10,7 +10,7 @@ import (
 
 func LoginHandler(ctx *gin.Context) {
 	var login Login
-	var user model.User
+	var user model.Users
 	if err := ctx.MustBindWith(&login, binding.JSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error_code": 1,
@@ -19,7 +19,7 @@ func LoginHandler(ctx *gin.Context) {
 		})
 		return
 	}
-	if user = checkLogin(login); user == (model.User{}) {
+	if user = checkLogin(login); user == (model.Users{}) {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error_code": 2,
 			"message":    "wrong username or password",
@@ -56,7 +56,7 @@ func LoginHandler(ctx *gin.Context) {
 	})
 	return
 }
-func checkLogin(login Login) model.User {
+func checkLogin(login Login) model.Users {
 	user := model.CheckAuth(login.Username, login.Password) // delete type
 	return user
 }
