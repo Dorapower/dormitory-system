@@ -21,7 +21,7 @@ func GetMyRoomByUid(uid int) (roomName string, names []string) {
 	var db = database.MysqlDb
 
 	var roomId int
-	db.Model(Beds{}).Select("room_id").Where("uid = ?", uid).Scan(&roomId)
+	db.Model(Beds{}).Select("room_id").Where("uid = ? and is_valid = ? and is_del = ? and status = ?", uid, 1, 0, 1).Scan(&roomId)
 
 	// get room's name
 	db.Model(Rooms{}).Select("name").Where("id = ?", roomId).Scan(&roomName)
@@ -54,7 +54,7 @@ func GetEmptyBeds(gender int) (list []EmptyBedsApi) {
 
 		// cnt : all empty beds. gorm required int64
 		var cnt int64
-		db.Model(Beds{}).Where("is_valid = ? and room_id IN (?)", 1, db.Model(Rooms{}).Select("id").Where("gender = ? and building_id = ?", gender, bId)).Count(&cnt)
+		db.Model(Beds{}).Where("is_valid = ? and is_del = ? and status = ? and room_id IN (?)", 1, 0, 0, db.Model(Rooms{}).Select("id").Where("gender = ? and building_id = ?", gender, bId)).Count(&cnt)
 
 		emptyBeds := EmptyBedsApi{
 			building_id: bId,

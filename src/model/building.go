@@ -22,7 +22,7 @@ type BuildingApi struct {
 // GetBuildingList : get all building's id and name
 func GetBuildingList() (list []BuildingApi) {
 	var db = database.MysqlDb
-	db.Model(Buildings{}).Select("id", "Name").Scan(&list)
+	db.Model(Buildings{}).Order("order_num").Select("id", "Name").Scan(&list)
 	return
 }
 
