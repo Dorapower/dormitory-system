@@ -5,6 +5,7 @@ import (
 	"dormitory-system/src/auth"
 	"dormitory-system/src/middleware"
 	"dormitory-system/src/room"
+	"dormitory-system/src/sys"
 	"dormitory-system/src/user"
 	"github.com/gin-gonic/gin"
 )
@@ -34,6 +35,10 @@ func InitRouter() *gin.Engine {
 	protected.GET("/room/building", room.BuildingHandler)
 	protected.GET("/room/room/:id", room.RoomHandler)
 	protected.GET("/room/empty", room.EmptyHandler)
+
+	protected.GET("/sys/opentime", sys.OpentimeHandler)
+	protected.GET("/sys/groupnum", sys.GroupNumHandler)
+	protected.GET("/sys/classlimit", sys.ClassLimitHandler)
 
 	return router
 }
