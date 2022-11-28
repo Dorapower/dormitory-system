@@ -4,6 +4,7 @@ import (
 	"dormitory-system/src/addData"
 	"dormitory-system/src/auth"
 	"dormitory-system/src/middleware"
+	"dormitory-system/src/user"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,5 +24,10 @@ func InitRouter() *gin.Engine {
 	protected := router.Group("/api")
 	protected.Use(middleware.JwtAuth())
 	protected.GET("/auth/logout", auth.LogoutHandler)
+
+	protected.GET("/user/myinfo", user.MyInfoHandler)
+	protected.GET("/user/myroom", user.MyRoomHandler)
+	protected.POST("/user/passwd", user.PasswdHandler)
+
 	return router
 }
