@@ -4,6 +4,7 @@ import (
 	"dormitory-system/src/addData"
 	"dormitory-system/src/auth"
 	"dormitory-system/src/middleware"
+	"dormitory-system/src/room"
 	"dormitory-system/src/user"
 	"github.com/gin-gonic/gin"
 )
@@ -28,6 +29,11 @@ func InitRouter() *gin.Engine {
 	protected.GET("/user/myinfo", user.MyInfoHandler)
 	protected.GET("/user/myroom", user.MyRoomHandler)
 	protected.POST("/user/passwd", user.PasswdHandler)
+
+	protected.GET("/room/buildinglist", room.BuildingListHandler)
+	protected.GET("/room/building", room.BuildingHandler)
+	protected.GET("/room/room/:id", room.RoomHandler)
+	protected.GET("/room/empty", room.EmptyHandler)
 
 	return router
 }
