@@ -17,8 +17,8 @@ type Groups struct {
 }
 
 type CreatGroupApi struct {
-	team_id     int
-	invite_code string
+	TeamId     int
+	InviteCode string
 }
 
 // generate a random invite_code
@@ -57,8 +57,8 @@ func CreatGroup(uid int, name, describe string) (cApi CreatGroupApi) {
 	group.InviteCode = code
 	db.Create(&group)
 
-	cApi.team_id = group.ID
-	cApi.invite_code = group.InviteCode
+	cApi.TeamId = group.ID
+	cApi.InviteCode = group.InviteCode
 
 	var mem = GroupsUser{
 		Uid:       uid,
