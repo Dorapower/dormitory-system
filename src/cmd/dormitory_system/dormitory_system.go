@@ -5,6 +5,7 @@ import (
 	"dormitory-system/src/router"
 	"github.com/joho/godotenv"
 	"log"
+	"os"
 )
 
 func main() {
@@ -15,7 +16,8 @@ func main() {
 	}
 	database.ConnectRedis()
 	database.ConnectMysql()
-	err = router.InitRouter().Run(":8090")
+	port := os.Getenv("API_PORT")
+	err = router.InitRouter().Run(":" + port)
 	if err != nil {
 		log.Fatalln("Server Error: ", err)
 	}
