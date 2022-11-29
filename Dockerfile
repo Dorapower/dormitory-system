@@ -10,8 +10,9 @@ COPY go.mod go.sum ./
 RUN go env -w GOPROXY=https://goproxy.cn
 RUN go mod download
 
-COPY . .
-RUN go build -o dormitory_system .
+COPY src ./src
+COPY .env ./
+RUN go build -o dormitory_system ./src/cmd/dormitory_system
 
 EXPOSE 8091
 
