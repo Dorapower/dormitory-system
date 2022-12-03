@@ -7,8 +7,8 @@ import (
 
 func MyInfoHandler(ctx *gin.Context) {
 	uid := ctx.Keys["uid"].(int)
-	user := model.GetUserByUid(uid)
-	if user == (model.Users{}) {
+	user := model.GetUserInfoByUid(uid)
+	if user == (model.UserApi{}) {
 		ctx.JSON(500, gin.H{
 			"error_code": 1,
 			"message":    "server error when getting user info",
