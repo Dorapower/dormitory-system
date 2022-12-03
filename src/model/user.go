@@ -1,6 +1,9 @@
 package model
 
-import "dormitory-system/src/database"
+import (
+	"dormitory-system/src/database"
+	"time"
+)
 
 type Users struct {
 	Uid           int `gorm:"primaryKey;autoIncrement"`
@@ -20,6 +23,41 @@ type Users struct {
 func GetUserByUid(uid int) (user Users) {
 	var db = database.MysqlDb
 	db.Where("uid = ?", uid).First(&user)
+	return
+}
+
+type UserApi struct {
+	uid               int
+	studengid         string
+	name              string
+	gender            int
+	email             string
+	tel               string
+	last_login_time   string
+	verification_code string
+	class_name        string
+}
+
+func GetUserInfoByUid(uid int) (userApi UserApi) {
+	var db = database.MysqlDb
+	var user Users
+	db.Where("uid = ?", uid).First(&user)
+	var stu StudentInfo
+	db.Where("uid = ?", uid).First(&stu)
+	className := GetClassName(stu.ClassId)
+
+	lastLoginTime := time.Unix(int64(user.LastLoginTime), 0).Format("2006-01-02 15:04:05")
+
+	userApi.uid = uid
+	userApi.studengid = stu.StudentId
+	userApi.name = user.Name
+	userApi.gender = user.Gender
+	userApi.email = user.Email
+	userApi.tel = user.Tel
+	userApi.last_login_time = lastLoginTime
+	userApi.verification_code = stu.VerificationCode
+	userApi.class_name = className
+
 	return
 }
 
