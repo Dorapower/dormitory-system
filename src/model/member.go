@@ -3,6 +3,7 @@ package model
 import (
 	"dormitory-system/src/database"
 	"gorm.io/gorm"
+	"strconv"
 	"time"
 )
 
@@ -58,7 +59,8 @@ func JoinGroup(uid int, inviteCode string) int {
 	// check current group members if up to max
 	var currentCnt int64
 	db.Model(&GroupsUser{}).Where("group_id = ?", groupId).Count(&currentCnt)
-	if currentCnt == GroupMaxPeople {
+	groupNum, _ := strconv.Atoi(GetSystemConfigByKey("group_num").KeyValue)
+	if int(currentCnt) == groupNum {
 		return 3
 	}
 
