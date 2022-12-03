@@ -155,3 +155,48 @@ func DealGroupOrder(uid, groupId, buildingId, submitTime int) int {
 	db.Create(&order)
 	return order.ID
 }
+
+type OrderListApi struct {
+	order_id       int
+	group_name     string
+	building_name  string
+	submit_time    string
+	result_content string
+	status         int
+}
+
+func GetOrderList(uid int) (orderLA []OrderListApi) {
+	var db = database.MysqlDb
+	var orderIds []int
+	db.Model(Orders{}).Select("id").Where("uid = ?", uid).Scan(&orderIds)
+	for id := range orderIds {
+		var order Orders
+		db.Where("id = ?", id).First(&order)
+		var groupName string
+		db.Model(Groups{}).Select("name").Where("id = ?", order.GroupId).Scan(&groupName)
+		var buildingName string
+		db.Model(Buildings{}).Select("name").Where("id = ?", order.BuildingId).Scan(&buildingName)
+		submitTime := time.Unix(int64(order.SubmitTime), 0).Format("2006-01-02 15:04:05")
+		var orderApi = OrderListApi{
+			order_id:       id,
+			group_name:     groupName,
+			building_name:  buildingName,
+			submit_time:    submitTime,
+			result_content: order.ResultContent,
+			status:         order.Status,
+		}
+		orderLA = append(orderLA, orderApi)
+	}
+	return
+}
+
+type OrderInfoApi struct {
+	status  int
+	room_id int
+}
+
+func GetOrderInfo(orderId int) (oIA OrderInfoApi) {
+	var db = database.MysqlDb
+	db.Model(Orders{}).Select("status", "room_id").Where("id = ?", orderId).Scan(&oIA)
+	return
+}
