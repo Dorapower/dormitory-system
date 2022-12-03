@@ -16,7 +16,7 @@ func BuildingHandler(ctx *gin.Context) {
 		})
 		return
 	}
-	info := model.GetBuildingInfo(id)[0]
+	info := model.GetBuildingInfo(id)
 	ctx.JSON(200,
 		gin.H{
 			"code": 200,

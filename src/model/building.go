@@ -33,8 +33,8 @@ type BuildingInfoApi struct {
 }
 
 // GetBuildingInfo : get a building's detailed information
-func GetBuildingInfo(id int) (list []BuildingInfoApi) {
+func GetBuildingInfo(id int) (bIA BuildingInfoApi) {
 	var db = database.MysqlDb
-	db.Model(Buildings{}).Select("name", "describe", "image_url").Where("id = ?", id).Scan(&list)
+	db.Model(Buildings{}).Select("name", "describe", "image_url").Where("id = ?", id).Scan(&bIA)
 	return
 }
