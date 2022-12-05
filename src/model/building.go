@@ -1,6 +1,8 @@
 package model
 
-import "dormitory-system/src/database"
+import (
+	"dormitory-system/src/database"
+)
 
 type Buildings struct {
 	ID       int `gorm:"primaryKey;autoIncrement"`
@@ -15,21 +17,21 @@ type Buildings struct {
 }
 
 type BuildingApi struct {
-	building_id   int
-	building_name string
+	BuildingId   int    `json:"building_id" gorm:"column:id"`
+	BuildingName string `json:"building_name" gorm:"column:name"`
 }
 
-// GetBuildingList : get all building's id and name
+// GetBuildingList : get all building's id and Name
 func GetBuildingList() (list []BuildingApi) {
 	var db = database.MysqlDb
-	db.Model(Buildings{}).Order("order_num").Select("id", "Name").Scan(&list)
+	db.Model(Buildings{}).Order("order_num").Select("id", "name").Scan(&list)
 	return
 }
 
 type BuildingInfoApi struct {
-	name      string
-	describe  string
-	image_url string
+	Name     string `json:"name"`
+	Describe string `json:"describe"`
+	ImageUrl string `json:"image_url"`
 }
 
 // GetBuildingInfo : get a building's detailed information

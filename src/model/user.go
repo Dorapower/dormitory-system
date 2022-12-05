@@ -29,7 +29,7 @@ func GetUserByUid(uid int) (user Users) {
 type UserApi struct {
 	Uid              int    `json:"uid"`
 	Student          string `json:"student_id"`
-	Name             string `json:"name"`
+	Name             string `json:"Name"`
 	Gender           int    `json:"gender"`
 	Email            string `json:"email"`
 	Tel              string `json:"tel"`

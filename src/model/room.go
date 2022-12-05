@@ -17,16 +17,16 @@ type Rooms struct {
 }
 
 type RoomInfoApi struct {
-	name        string
-	gender      int
-	describe    string
-	image_url   string
-	building_id int
+	Name       string `json:"name" gorm:"column:name"`
+	Gender     int    `json:"gender" gorm:"column:gender"`
+	Describe   string `json:"describe" gorm:"colum:describe"`
+	ImageUrl   string `json:"image_url" gorm:"image_url"`
+	BuildingId int    `json:"building_id" gorm:"building_id"`
 }
 
 // GetRoomInfoById : get room's detailed information
 func GetRoomInfoById(id int) (rApi RoomInfoApi) {
 	var db = database.MysqlDb
-	db.Model(Rooms{}).Select("name", "gender", "describe", "image_url", "building_id").Where("id = ?", id).Scan(&rApi)
+	db.Model(Rooms{}).Select("Name", "gender", "describe", "image_url", "building_id").Where("id = ?", id).Scan(&rApi)
 	return
 }

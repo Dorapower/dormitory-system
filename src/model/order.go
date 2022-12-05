@@ -68,7 +68,7 @@ func DealPersonalOrder(uid, buildingId, submitTime int) int {
 		if result.Error == nil {
 			order.RoomId = bed.RoomId
 			var roomName string
-			db.Model(Rooms{}).Select("name").Where("id = ?", bed.RoomId).Scan(&roomName)
+			db.Model(Rooms{}).Select("Name").Where("id = ?", bed.RoomId).Scan(&roomName)
 			order.ResultContent = "success: " + roomName
 			// update bed's information
 			db.Model(&bed).Updates(map[string]interface{}{"uid": uid, "status": 1})
@@ -131,7 +131,7 @@ func DealGroupOrder(uid, groupId, buildingId, submitTime int) int {
 			db.Model(Beds{}).Limit(int(stuCnt)).Select("id").Where("room_id = ? and is_valid = ? and is_del = ? and status = ?", roomIds, 1, 0, 0).Order("order_num").Scan(&bedIds)
 			order.RoomId = roomId
 			var roomName string
-			db.Model(Rooms{}).Select("name").Where("id = ?", roomId).Scan(&roomName)
+			db.Model(Rooms{}).Select("Name").Where("id = ?", roomId).Scan(&roomName)
 			order.ResultContent = "success: " + roomName
 
 			// update group information
@@ -173,9 +173,9 @@ func GetOrderList(uid int) (orderLA []OrderListApi) {
 		var order Orders
 		db.Where("id = ?", id).First(&order)
 		var groupName string
-		db.Model(Groups{}).Select("name").Where("id = ?", order.GroupId).Scan(&groupName)
+		db.Model(Groups{}).Select("Name").Where("id = ?", order.GroupId).Scan(&groupName)
 		var buildingName string
-		db.Model(Buildings{}).Select("name").Where("id = ?", order.BuildingId).Scan(&buildingName)
+		db.Model(Buildings{}).Select("Name").Where("id = ?", order.BuildingId).Scan(&buildingName)
 		submitTime := time.Unix(int64(order.SubmitTime), 0).Format("2006-01-02 15:04:05")
 		var orderApi = OrderListApi{
 			order_id:       id,

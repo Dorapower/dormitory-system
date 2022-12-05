@@ -59,8 +59,8 @@ func JoinGroup(uid int, inviteCode string) int {
 	// check current group members if up to max
 	var currentCnt int64
 	db.Model(&GroupsUser{}).Where("group_id = ?", groupId).Count(&currentCnt)
-	groupNum, _ := strconv.Atoi(GetSystemConfigByKey("group_num").KeyValue)
-	if int(currentCnt) == groupNum {
+	_, _ = strconv.Atoi(GetSystemConfigByKey("group_num").KeyValue)
+	if int(currentCnt) == GroupMaxPeople {
 		return 3
 	}
 
@@ -117,9 +117,12 @@ func GetMyGroup(uid int) (myGroup MyGroupApi) {
 	rows, _ := db.Model(GroupsUser{}).Select("uid").Where("group_id = ? and is_del = ?", group.ID, 0).Rows()
 	for rows.Next() {
 		var memId int
-		db.ScanRows(rows, &memId)
+		err := db.ScanRows(rows, &memId)
+		if err != nil {
+			return MyGroupApi{}
+		}
 		var mem MemberApi
-		db.Model(StudentInfo{}).Select("student_info.studentid, users.name").Joins("left join users on student_info.uid = users.uid").Where("uid = ?", memId).Scan(&mem)
+		db.Model(StudentInfo{}).Select("student_info.studentid, users.Name").Joins("left join users on student_info.uid = users.uid").Where("uid = ?", memId).Scan(&mem)
 		myGroup.members = append(myGroup.members, mem)
 	}
 	return
