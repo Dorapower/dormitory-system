@@ -2,7 +2,6 @@ package model
 
 import (
 	"dormitory-system/src/database"
-	"fmt"
 	"time"
 )
 
@@ -22,11 +21,10 @@ type Auth struct {
 func CheckAuth(username, password string) Users { // delete type param
 	var db = database.MysqlDb
 	var auth Auth
-	fmt.Println(username, password)
 	result := db.Where("username = ? and password = ?", username, password).First(&auth)
-	fmt.Println(auth)
+
 	// gorm.ErrRecordNotFound
-	fmt.Println(result.Error)
+
 	if result.Error != nil {
 		return Users{}
 	}
