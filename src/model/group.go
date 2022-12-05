@@ -43,8 +43,9 @@ func CreatGroup(uid int, name, describe string) (cApi CreatGroupApi) {
 	// check if code have already existed
 	for {
 		code = generateCode()
-		result := db.Where("invite_code = ? and is_del = ?", code, 0).Find(&group)
+		result := db.Where("invite_code = ? and is_del = ?", code, 0).First(&group)
 		// if not exist, jump out the loop
+
 		if result.Error == gorm.ErrRecordNotFound {
 			break
 		}
