@@ -59,6 +59,6 @@ func ChangePwd(uid int, oldPwd, newPwd string) bool {
 	if auth.Password != oldPwd {
 		return false
 	}
-	db.Model(&auth).Update("password", newPwd)
+	db.Model(&auth).Where("uid = ?", uid).Update("password", newPwd)
 	return true
 }

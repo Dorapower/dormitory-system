@@ -38,10 +38,10 @@ func InitRouter() *gin.Engine {
 	protected.GET("/room/empty", room.EmptyHandler)
 
 	protected.POST("/team/create", team.CreateTeamHandler)
-	protected.POST("/team/delete", team.DeleteTeamHandler)
+	protected.POST("/team/del", team.DeleteTeamHandler)
 	protected.POST("/team/join", team.JoinTeamHandler)
 	protected.POST("/team/quit", team.LeaveTeamHandler)
-	protected.GET("/team/myteam", team.MyTeamHandler)
+	protected.GET("/team/my", team.MyTeamHandler)
 	protected.POST("/team/transfer", team.TransferTeamHandler)
 
 	protected.GET("/sys/opentime", sys.OpentimeHandler)

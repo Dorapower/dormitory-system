@@ -17,8 +17,8 @@ type Groups struct {
 }
 
 type CreatGroupApi struct {
-	TeamId     int
-	InviteCode string
+	InviteCode string `json:"invite_code"`
+	TeamId     int    `json:"team_id"` // 对应group表中的id
 }
 
 // generate a random invite_code
@@ -75,11 +75,13 @@ func CreatGroup(uid int, name, describe string) (cApi CreatGroupApi) {
 // DelGroup : delete a group by id
 func DelGroup(groupId int) bool {
 	var db = database.MysqlDb
-	result := db.Model(GroupsUser{}).Select("id").Where("group_id = ? and is_del = ? and is_creator = ?", groupId, 0, 0)
+	var memId int
+	db.Model(GroupsUser{}).Select("id").Where("group_id = ? and is_del = ? and is_creator = ?", groupId, 0, 0).Scan(&memId)
+
 	// no member in group, delete it
-	if result.Error == gorm.ErrRecordNotFound {
+	if memId == 0 {
 		db.Model(GroupsUser{}).Where("group_id = ? and is_creator = ?", groupId, 1).Updates(map[string]interface{}{"is_del": 1, "leave_time": int(time.Now().Unix())})
-		db.Model(Groups{}).Where("group_id = ?", groupId).Update("is_del", 1)
+		db.Model(Groups{}).Where("id = ?", groupId).Update("is_del", 1)
 		return true
 	}
 	return false
