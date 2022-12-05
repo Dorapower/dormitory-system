@@ -27,13 +27,12 @@ func RefreshHandler(ctx *gin.Context) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return os.Getenv("API_SECRET"), nil
+		return []byte(os.Getenv("API_SECRET")), nil
 	}, jwt.WithJSONNumber())
 	if err != nil {
 		ctx.JSON(400, gin.H{
 			"error_code": 2,
 			"message":    "invalid token:" + err.Error(),
-			"data":       gin.H{},
 		})
 		return
 	}
@@ -43,7 +42,6 @@ func RefreshHandler(ctx *gin.Context) {
 			ctx.JSON(400, gin.H{
 				"error_code": 3,
 				"message":    "invalid refresh token",
-				"data":       gin.H{},
 			})
 			return
 		}
@@ -53,7 +51,6 @@ func RefreshHandler(ctx *gin.Context) {
 			ctx.JSON(500, gin.H{
 				"error_code": 4,
 				"message":    "server error when parsing token",
-				"data":       gin.H{},
 			})
 			return
 		}
@@ -64,7 +61,6 @@ func RefreshHandler(ctx *gin.Context) {
 			ctx.JSON(500, gin.H{
 				"error_code": 4,
 				"message":    "server error when parsing token",
-				"data":       gin.H{},
 			})
 			return
 		}
@@ -72,7 +68,6 @@ func RefreshHandler(ctx *gin.Context) {
 			ctx.JSON(400, gin.H{
 				"error_code": 5,
 				"message":    "refresh token expired",
-				"data":       gin.H{},
 			})
 			return
 		}
@@ -82,7 +77,6 @@ func RefreshHandler(ctx *gin.Context) {
 			ctx.JSON(400, gin.H{
 				"error_code": 6,
 				"message":    "outdated refresh token",
-				"data":       gin.H{},
 			})
 			return
 		}
@@ -92,12 +86,11 @@ func RefreshHandler(ctx *gin.Context) {
 			ctx.JSON(400, gin.H{
 				"error_code": 7,
 				"message":    "failed to generate token pair",
-				"data":       gin.H{},
 			})
 			return
 		}
 		ctx.JSON(200, gin.H{
-			"error_code": 0,
+			"error_code": 200,
 			"message":    "refresh token pair successfully",
 			"data": gin.H{
 				"token":         tokenString,
@@ -112,7 +105,6 @@ func RefreshHandler(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{
 			"error_code": 8,
 			"message":    "invalid refresh token",
-			"data":       gin.H{},
 		})
 		return
 	}
