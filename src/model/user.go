@@ -64,7 +64,7 @@ func GetUserInfoByUid(uid int) (userApi UserApi) {
 // update last_login_at
 func (u *Users) updateLastLogin() bool {
 	var db = database.MysqlDb
-	result := db.Model(Users{}).Where("uid = ?", u.Uid).Update("last_login_at", u.LastLoginTime)
+	result := db.Model(Users{}).Where("uid = ?", u.Uid).Update("last_login_time", u.LastLoginTime)
 	if result.Error != nil {
 		return false
 	}
