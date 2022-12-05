@@ -27,38 +27,45 @@ func GetUserByUid(uid int) (user Users) {
 }
 
 type UserApi struct {
-	uid               int
-	studengid         string
-	name              string
-	gender            int
-	email             string
-	tel               string
-	last_login_time   string
-	verification_code string
-	class_name        string
+	Uid              int    `json:"uid"`
+	Student          string `json:"student_id"`
+	Name             string `json:"name"`
+	Gender           int    `json:"gender"`
+	Email            string `json:"email"`
+	Tel              string `json:"tel"`
+	LastLoginTime    string `json:"last_login_time"`
+	VerificationCode string `json:"verification_code"`
+	ClassName        string `json:"class_name"`
 }
 
-func GetUserInfoByUid(uid int) (userApi UserApi) {
+func GetUserInfoByUid(uid int) (DbQueryResult, error) {
 	var db = database.MysqlDb
 	var user Users
-	db.Where("uid = ?", uid).First(&user)
+
+	if err := db.Where("uid = ?", uid).First(&user).Error; err != nil {
+		return nil, err
+	}
 	var stu StudentInfo
-	db.Where("uid = ?", uid).First(&stu)
+	if err := db.Where("uid = ?", uid).First(&stu).Error; err != nil {
+		return nil, err
+	}
 	className := GetClassName(stu.ClassId)
 
 	lastLoginTime := time.Unix(int64(user.LastLoginTime), 0).Format("2006-01-02 15:04:05")
 
-	userApi.uid = uid
-	userApi.studengid = stu.StudentId
-	userApi.name = user.Name
-	userApi.gender = user.Gender
-	userApi.email = user.Email
-	userApi.tel = user.Tel
-	userApi.last_login_time = lastLoginTime
-	userApi.verification_code = stu.VerificationCode
-	userApi.class_name = className
+	var userApi UserApi
 
-	return
+	userApi.Uid = uid
+	userApi.Student = stu.StudentId
+	userApi.Name = user.Name
+	userApi.Gender = user.Gender
+	userApi.Email = user.Email
+	userApi.Tel = user.Tel
+	userApi.LastLoginTime = lastLoginTime
+	userApi.VerificationCode = stu.VerificationCode
+	userApi.ClassName = className
+
+	return userApi, nil
 }
 
 // update last_login_at
