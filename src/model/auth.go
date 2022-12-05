@@ -38,6 +38,7 @@ func CheckAuth(username, password string) Users { // delete type param
 	user = GetUserByUid(auth.Uid)
 	user.LastLoginTime = int(time.Now().Unix())
 	user.updateLastLogin()
+
 	return user
 }
 
