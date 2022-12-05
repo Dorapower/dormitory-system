@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v4"
 	"os"
+	"strings"
 	"time"
 )
 
@@ -35,7 +36,7 @@ func generateTokenPair(data *model.Users) (string, string, error) {
 	refreshClaims["exp"] = time.Now().Add(RefreshTokenDuration).Unix()
 
 	// Sign and get the complete encoded token as a string
-	refreshTokenString, err := refreshToken.SignedString([]byte("secret"))
+	refreshTokenString, err := refreshToken.SignedString([]byte(os.Getenv("API_SECRET")))
 	if err != nil {
 		return "", "", err
 	}
@@ -44,6 +45,9 @@ func generateTokenPair(data *model.Users) (string, string, error) {
 }
 
 func ParseToken(tokenString string) (int, error) {
+	if strings.Contains(tokenString, "Bearer") {
+		tokenString = strings.Replace(tokenString, "Bearer ", "", 1)
+	}
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])

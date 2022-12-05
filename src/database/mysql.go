@@ -6,6 +6,7 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/schema"
+	"log"
 	"os"
 )
 
@@ -20,7 +21,7 @@ func ConnectMysql() {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", username, password, host, port, database)
 	sqlDB, err := sql.Open("mysql", dsn)
 	if err != nil {
-		panic(err.Error())
+		log.Fatalln("Error when trying to connect to the sql server: " + err.Error())
 	}
 	MysqlDb, _ = gorm.Open(mysql.New(mysql.Config{Conn: sqlDB}), &gorm.Config{
 		NamingStrategy: schema.NamingStrategy{
@@ -28,6 +29,6 @@ func ConnectMysql() {
 		},
 	})
 	if MysqlDb.Error != nil {
-		panic(MysqlDb.Error)
+		log.Fatalln("Error when trying to connect to the sql server: " + MysqlDb.Error.Error())
 	}
 }

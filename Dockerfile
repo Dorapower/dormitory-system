@@ -12,7 +12,8 @@ RUN go mod download
 
 COPY src ./src
 COPY .env ./
-RUN go build -o dormitory_system ./src/cmd/dormitory_system
+RUN go build -o /dormitory_system ./src/cmd/dormitory_system
+
 
 EXPOSE 8091
 

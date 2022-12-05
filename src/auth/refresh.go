@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"log"
+	"os"
 	"time"
 )
 
@@ -26,12 +27,12 @@ func RefreshHandler(ctx *gin.Context) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte("secret"), nil
+		return os.Getenv("API_SECRET"), nil
 	}, jwt.WithJSONNumber())
 	if err != nil {
 		ctx.JSON(400, gin.H{
 			"error_code": 2,
-			"message":    "invalid token",
+			"message":    "invalid token:" + err.Error(),
 			"data":       gin.H{},
 		})
 		return

@@ -12,7 +12,7 @@ func main() {
 	// load .env
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Error when loading env file: ", err)
+		log.Fatalln("Error when loading env file: ", err)
 	}
 	database.ConnectRedis()
 	database.ConnectMysql()
