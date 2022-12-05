@@ -16,7 +16,7 @@ func InitRouter() *gin.Engine {
 	router.GET("/ping", func(c *gin.Context) {
 		c.String(200, "pong")
 	})
-	api := router.Group("/api")
+	api := router.Group("/")
 	api.POST("/auth/login", auth.LoginHandler)
 	api.POST("/auth/refresh_token", auth.RefreshHandler)
 
@@ -24,7 +24,7 @@ func InitRouter() *gin.Engine {
 	add.POST("/auth", addData.AddAuth)
 	add.POST("/user", addData.AddUser)
 
-	protected := router.Group("/api")
+	protected := router.Group("/")
 	protected.Use(middleware.JwtAuth())
 	protected.GET("/auth/logout", auth.LogoutHandler)
 
