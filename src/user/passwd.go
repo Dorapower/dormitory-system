@@ -7,8 +7,8 @@ import (
 )
 
 type PasswordRequest struct {
-	OldPassword string `json:"old_password" binding:"required"`
-	NewPassword string `json:"new_password" binding:"required"`
+	OldPassword string `json:"oldPasswd" binding:"required"`
+	NewPassword string `json:"newPasswd" binding:"required"`
 }
 
 func PasswdHandler(ctx *gin.Context) {
@@ -19,21 +19,18 @@ func PasswdHandler(ctx *gin.Context) {
 		ctx.JSON(400, gin.H{
 			"error_code": 1,
 			"message":    "bad request",
-			"data":       gin.H{},
 		})
 	}
 	uid := ctx.Keys["uid"].(int)
 	if model.ChangePwd(uid, passwordRequest.OldPassword, passwordRequest.NewPassword) == false {
 		ctx.JSON(500, gin.H{
-			"error_code": 1,
-			"message":    "old password is wrong",
-			"data":       gin.H{},
+			"code":    2,
+			"message": "old password is wrong",
 		})
 		return
 	}
 	ctx.JSON(200, gin.H{
-		"error_code": 0,
-		"message":    "change password success",
-		"data":       gin.H{},
+		"code":    200,
+		"message": "change password success",
 	})
 }
