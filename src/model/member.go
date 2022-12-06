@@ -41,8 +41,8 @@ func JoinGroup(uid int, inviteCode string) int {
 
 	// get group's id, if the group exist
 	var groupId int
-	result := db.Model(Groups{}).Select("id").Where("invite_code = ? and is_del = ?", inviteCode, 0).Scan(&groupId)
-	if result.Error == gorm.ErrRecordNotFound {
+	db.Model(Groups{}).Select("id").Where("invite_code = ? and is_del = ?", inviteCode, 0).Scan(&groupId)
+	if groupId == 0 {
 		return 1
 	}
 
@@ -65,9 +65,10 @@ func JoinGroup(uid int, inviteCode string) int {
 	}
 
 	// check if user has quited the group before
-	result = db.Model(GroupsUser{}).Select("id").Where("uid = ? and group_id = ? and is_del = ?", uid, groupId, 1)
-	if result.Error != gorm.ErrRecordNotFound {
-		db.Model(GroupsUser{}).Where("uid = ? and group_id = ? and is_del = ?", uid, groupId, 1).Update("is_del", 0)
+	var memId int
+	db.Model(GroupsUser{}).Select("id").Where("uid = ? and group_id = ? and is_del = ?", uid, groupId, 1).Scan(&memId)
+	if memId != 0 {
+		db.Model(GroupsUser{}).Where("uid = ? and group_id = ? and is_del = ?", uid, groupId, 1).Updates(map[string]interface{}{"is_del": 0, "leave_time": 0})
 		return 0
 	}
 
@@ -91,15 +92,15 @@ func QuitGroup(uid, groupId int) bool {
 }
 
 type MemberApi struct {
-	student_id   string
-	student_name string
+	StudentID   string `json:"student_id" gorm:"column:studentid"`
+	StudentName string `json:"student_name" gorm:"column:name"`
 }
 
 type MyGroupApi struct {
-	group_id    int
-	group_name  string
-	invice_code string
-	members     []MemberApi
+	GroupID    int         `json:"group_id"`
+	GroupName  string      `json:"group_name"`
+	InviteCode string      `json:"invite_code"`
+	Members    []MemberApi `json:"members"`
 }
 
 // GetMyGroup : get my group member's information (include myself)
@@ -109,21 +110,21 @@ func GetMyGroup(uid int) (myGroup MyGroupApi) {
 	// get group information
 	var group Groups
 	db.Where("id = (?)", db.Model(GroupsUser{}).Select("group_id").Where("uid = ? and is_del = ?", uid, 0)).First(&group)
-	myGroup.group_id = group.ID
-	myGroup.group_name = group.Name
-	myGroup.invice_code = group.InviteCode
+	myGroup.GroupID = group.ID
+	myGroup.GroupName = group.Name
+	myGroup.InviteCode = group.InviteCode
 
 	// get members' information
-	rows, _ := db.Model(GroupsUser{}).Select("uid").Where("group_id = ? and is_del = ?", group.ID, 0).Rows()
+	rows, _ := db.Model(GroupsUser{}).Where("group_id = ? and is_del = ?", group.ID, 0).Rows()
 	for rows.Next() {
-		var memId int
-		err := db.ScanRows(rows, &memId)
+		var mem GroupsUser
+		err := db.ScanRows(rows, &mem)
 		if err != nil {
 			return MyGroupApi{}
 		}
-		var mem MemberApi
-		db.Model(StudentInfo{}).Select("student_info.studentid, users.Name").Joins("left join users on student_info.uid = users.uid").Where("uid = ?", memId).Scan(&mem)
-		myGroup.members = append(myGroup.members, mem)
+		var memApi MemberApi
+		db.Model(StudentInfo{}).Select("student_info.studentid, users.name").Joins("left join users on student_info.uid = users.uid").Where("student_info.uid = ?", mem.Uid).Scan(&memApi)
+		myGroup.Members = append(myGroup.Members, memApi)
 	}
 	return
 }
@@ -133,8 +134,8 @@ func TransferGroup(uid int, sId string) bool {
 	var db = database.MysqlDb
 	// check if sId(studentId) is right
 	var otherUid int
-	result := db.Model(StudentInfo{}).Select("uid").Where("studentid = ?", sId).Scan(&otherUid)
-	if result.Error != nil {
+	db.Model(StudentInfo{}).Select("uid").Where("studentid = ?", sId).Scan(&otherUid)
+	if otherUid == 0 {
 		return false
 	}
 
