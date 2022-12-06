@@ -18,7 +18,7 @@ type Groups struct {
 
 type CreatGroupApi struct {
 	InviteCode string `json:"invite_code"`
-	TeamId     int    `json:"team_id"` // 对应group表中的id
+	TeamId     int    `json:"team_id"`
 }
 
 // generate a random invite_code
