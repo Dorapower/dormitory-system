@@ -7,7 +7,7 @@ import (
 )
 
 func RoomHandler(ctx *gin.Context) {
-	id, err := strconv.Atoi(ctx.Param("id"))
+	id, err := strconv.Atoi(ctx.Query("id"))
 	if err != nil {
 		ctx.JSON(400, gin.H{
 			"code": 400,

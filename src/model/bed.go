@@ -19,10 +19,10 @@ type Beds struct {
 }
 
 // GetMyRoomByUid : get my room's Name and roommates' Name
-func GetMyRoomByUid(uid int) (roomName string, names []string) {
+func GetMyRoomByUid(uid int) (roomId int, roomName string, names []string) {
 	var db = database.MysqlDb
 
-	var roomId int
+	// get room's id
 	db.Model(Beds{}).Select("room_id").Where("uid = ? and is_valid = ? and is_del = ? and status = ?", uid, 1, 0, 1).Scan(&roomId)
 
 	// get room's Name
