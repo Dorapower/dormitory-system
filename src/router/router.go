@@ -4,6 +4,7 @@ import (
 	"dormitory-system/src/addData"
 	"dormitory-system/src/auth"
 	"dormitory-system/src/middleware"
+	"dormitory-system/src/order"
 	"dormitory-system/src/room"
 	"dormitory-system/src/sys"
 	"dormitory-system/src/team"
@@ -43,6 +44,10 @@ func InitRouter() *gin.Engine {
 	protected.POST("/team/quit", team.LeaveTeamHandler)
 	protected.GET("/team/my", team.MyTeamHandler)
 	protected.POST("/team/transfer", team.TransferTeamHandler)
+
+	protected.POST("/order/create", order.CreateHandler)
+	protected.GET("/order/list", order.ListHandler)
+	protected.GET("/order/info/:id", order.InfoHandler)
 
 	protected.GET("/sys/opentime", sys.OpentimeHandler)
 	protected.GET("/sys/groupnum", sys.GroupNumHandler)

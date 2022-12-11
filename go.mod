@@ -7,6 +7,7 @@ require (
 	github.com/go-redis/redis v6.15.9+incompatible
 	github.com/golang-jwt/jwt/v4 v4.4.2
 	github.com/joho/godotenv v1.4.0
+	github.com/rabbitmq/amqp091-go v1.5.0
 	gorm.io/driver/mysql v1.4.3
 	gorm.io/gorm v1.24.1
 )

@@ -20,8 +20,8 @@ type Orders struct {
 	Status        int `gorm:"default:0"`
 }
 
-// CreatOrder : creat group's or personal order
-func CreatOrder(uid, groupId, buildingId, submitTime int) int {
+// CreateOrder : creat group's or personal order
+func CreateOrder(uid, groupId, buildingId, submitTime int) int {
 	var orderId int
 	if groupId == 0 {
 		orderId = DealPersonalOrder(uid, buildingId, submitTime)

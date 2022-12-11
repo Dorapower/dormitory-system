@@ -2,6 +2,7 @@ package main
 
 import (
 	"dormitory-system/src/database"
+	"dormitory-system/src/rabbitmq"
 	"dormitory-system/src/router"
 	"github.com/joho/godotenv"
 	"log"
@@ -16,6 +17,7 @@ func main() {
 	}
 	database.ConnectRedis()
 	database.ConnectMysql()
+	rabbitmq.Connect()
 	port := os.Getenv("API_PORT")
 	err = router.InitRouter().Run(":" + port)
 	if err != nil {
