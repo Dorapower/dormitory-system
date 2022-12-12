@@ -35,7 +35,7 @@ func InitRouter() *gin.Engine {
 
 	protected.GET("/room/buildinglist", room.BuildingListHandler)
 	protected.GET("/room/building", room.BuildingHandler)
-	protected.GET("/room/room/:id", room.RoomHandler)
+	protected.GET("/room/room", room.RoomHandler)
 	protected.GET("/room/empty", room.EmptyHandler)
 
 	protected.POST("/team/create", team.CreateTeamHandler)
@@ -47,7 +47,7 @@ func InitRouter() *gin.Engine {
 
 	protected.POST("/order/create", order.CreateHandler)
 	protected.GET("/order/list", order.ListHandler)
-	protected.GET("/order/info/:id", order.InfoHandler)
+	protected.GET("/order/info", order.InfoHandler)
 
 	protected.GET("/sys/opentime", sys.OpentimeHandler)
 	protected.GET("/sys/groupnum", sys.GroupNumHandler)
