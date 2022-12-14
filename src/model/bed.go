@@ -44,7 +44,7 @@ type EmptyBedsApi struct {
 func GetEmptyBeds(gender int) (list []EmptyBedsApi) {
 	var db = database.MysqlDb
 	// get all valid building's id
-	rows, _ := db.Model(Rooms{}).Select("building_id").Distinct("building_id").Where("gender = ? and building_id IN (?)", gender, db.Model(Buildings{}).Select("building_id").Where("is_valid = ?", 1)).Rows()
+	rows, _ := db.Model(Rooms{}).Select("building_id").Distinct("building_id").Where("id_valid = ? and gender = ? and building_id IN (?)", 1, gender, db.Model(Buildings{}).Select("building_id").Where("is_valid = ?", 1)).Rows()
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
