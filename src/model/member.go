@@ -7,8 +7,6 @@ import (
 	"time"
 )
 
-const GroupMaxPeople = 4
-
 type GroupsUser struct {
 	ID        int `gorm:"primaryKey;autoIncrement"`
 	Uid       int
@@ -20,30 +18,39 @@ type GroupsUser struct {
 	Status    int `gorm:"default:0"`
 }
 
-// CheckUserGroup : check if user has a group
-func CheckUserGroup(uid int) bool {
+// GetUserGroup : check if user has a group
+func GetUserGroup(uid int) int {
 	var db = database.MysqlDb
-	result := db.Model(GroupsUser{}).Select("id").Where("uid = ? and is_del = ?", uid, 0)
+	var groupUser GroupsUser
+	result := db.Model(GroupsUser{}).Where("uid = ? and is_del = ?", uid, 0).First(&groupUser)
 	if result.Error == gorm.ErrRecordNotFound {
-		return false
+		return 0
 	}
-	return true
+	return groupUser.GroupId
 }
 
 // JoinGroup : join a group by invite code
 //
-//		 return 0 : success
-//	            1 : invite code wrong
-//				2 : gender wrong
-//	            3 : group members are full
+//				 return 0 : success
+//	                 	1 : already have a group
+//			            2 : invite code wrong
+//						3 : gender wrong
+//			            4 : group members are full
 func JoinGroup(uid int, inviteCode string) int {
 	var db = database.MysqlDb
 
-	// get group's id, if the group exist
+	// check if already have a group
 	var groupId int
-	db.Model(Groups{}).Select("id").Where("invite_code = ? and is_del = ?", inviteCode, 0).Scan(&groupId)
-	if groupId == 0 {
+	groupId = GetUserGroup(uid)
+	if groupId != 0 {
 		return 1
+	}
+
+	// get group's inviteCode
+	var code string
+	db.Model(Groups{}).Select("invite_code").Where("id = ?", groupId).Scan(&code)
+	if code != inviteCode {
+		return 2
 	}
 
 	// check gender
@@ -53,15 +60,15 @@ func JoinGroup(uid int, inviteCode string) int {
 	subQuery2 := db.Model(GroupsUser{}).Select("uid").Where("group_id = (?) and is_creator = ?", subQuery1, 1)
 	db.Model(Users{}).Select("gender").Where("uid = (?)", subQuery2).Scan(&groupGender)
 	if groupGender != user.Gender {
-		return 2
+		return 3
 	}
 
 	// check current group members if up to max
 	var currentCnt int64
 	db.Model(&GroupsUser{}).Where("group_id = ?", groupId).Count(&currentCnt)
-	_, _ = strconv.Atoi(GetSystemConfigByKey("group_num").KeyValue)
-	if int(currentCnt) == GroupMaxPeople {
-		return 3
+	key, _ := strconv.Atoi(GetSystemConfigByKey("group_num").KeyValue)
+	if int(currentCnt) == key {
+		return 4
 	}
 
 	// check if user has quited the group before
@@ -82,7 +89,13 @@ func JoinGroup(uid int, inviteCode string) int {
 	return 0
 }
 
-func QuitGroup(uid, groupId int) bool {
+func QuitGroup(uid int) bool {
+	var groupId int
+	groupId = GetUserGroup(uid)
+	if groupId == 0 {
+		return false
+	}
+
 	var db = database.MysqlDb
 	result := db.Model(GroupsUser{}).Where("uid = ? and group_id = ?", uid, groupId).Updates(map[string]interface{}{"is_del": 1, "leave_time": int(time.Now().Unix())})
 	if result.Error != nil {
@@ -132,10 +145,20 @@ func GetMyGroup(uid int) (myGroup MyGroupApi) {
 // TransferGroup : transfer group to other
 func TransferGroup(uid int, sId string) bool {
 	var db = database.MysqlDb
+	var groupId int
+	groupId = GetUserGroup(uid)
+	if groupId == 0 {
+		return false
+	}
+
 	// check if sId(studentId) is right
 	var otherUid int
 	db.Model(StudentInfo{}).Select("uid").Where("studentid = ?", sId).Scan(&otherUid)
 	if otherUid == 0 {
+		return false
+	}
+	otherGroupId := GetUserGroup(otherUid)
+	if otherGroupId == 0 || groupId != otherGroupId {
 		return false
 	}
 
