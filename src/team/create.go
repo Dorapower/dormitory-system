@@ -23,13 +23,21 @@ func CreateTeamHandler(ctx *gin.Context) {
 		return
 	}
 	uid := ctx.Keys["uid"].(int)
-	created := model.CreatGroup(uid, createTeamRequest.Name, createTeamRequest.Describe)
-	ctx.JSON(200, gin.H{
-		"code":    200,
-		"message": "create team success",
-		"data": gin.H{
-			"team_id":     created.TeamId,
-			"invite_code": created.InviteCode,
-		},
-	})
+	created, ok := model.CreatGroup(uid, createTeamRequest.Name, createTeamRequest.Describe)
+	if ok {
+		ctx.JSON(200, gin.H{
+			"code":    200,
+			"message": "create team success",
+			"data": gin.H{
+				"team_id":     created.TeamId,
+				"invite_code": created.InviteCode,
+			},
+		})
+	} else {
+		ctx.JSON(200, gin.H{
+			"code":    200,
+			"message": "already have a group",
+			"data":    gin.H{},
+		})
+	}
 }
