@@ -9,8 +9,8 @@ import (
 )
 
 type CreateRequest struct {
-	GroupId    int `json:"group_id" binding:"required"`
-	BuildingId int `json:"building_id" binding:"required"`
+	GroupId    *int `json:"group_id" binding:"required"`
+	BuildingId int  `json:"building_id" binding:"required"`
 }
 
 func CreateHandler(ctx *gin.Context) {
@@ -35,7 +35,7 @@ func CreateHandler(ctx *gin.Context) {
 		return
 	}
 	rabbitmq.PublishOrderMessage(msg)
-	orderId := model.CreateOrder(uid, createRequest.GroupId, createRequest.BuildingId, int(time.Now().Unix()))
+	orderId := model.CreateOrder(uid, *createRequest.GroupId, createRequest.BuildingId, int(time.Now().Unix()))
 	ctx.JSON(200, gin.H{
 		"code":    200,
 		"message": "create order success",
