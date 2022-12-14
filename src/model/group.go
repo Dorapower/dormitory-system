@@ -34,9 +34,16 @@ func generateCode() string {
 }
 
 // CreatGroup : creat a group, return group's id and invite_code
-func CreatGroup(uid int, name, describe string) (cApi CreatGroupApi) {
+func CreatGroup(uid int, name, describe string) (CreatGroupApi, bool) {
+
+	// check if already have a group
+	groupId := GetUserGroup(uid)
+	if groupId != 0 {
+		return CreatGroupApi{}, false
+	}
 
 	var db = database.MysqlDb
+	var cApi CreatGroupApi
 	var group Groups
 	var code string
 
@@ -45,7 +52,6 @@ func CreatGroup(uid int, name, describe string) (cApi CreatGroupApi) {
 		code = generateCode()
 		result := db.Where("invite_code = ? and is_del = ?", code, 0).First(&group)
 		// if not exist, jump out the loop
-
 		if result.Error == gorm.ErrRecordNotFound {
 			break
 		}
@@ -69,17 +75,24 @@ func CreatGroup(uid int, name, describe string) (cApi CreatGroupApi) {
 		LeaveTime: 0,
 	}
 	db.Create(&mem)
-	return
+	return cApi, true
 }
 
 // DelGroup : delete a group by id
-func DelGroup(groupId int) bool {
+func DelGroup(uid int) bool {
 	var db = database.MysqlDb
-	var memId int
-	db.Model(GroupsUser{}).Select("id").Where("group_id = ? and is_del = ? and is_creator = ?", groupId, 0, 0).Scan(&memId)
+
+	// check if user have a group
+	groupId := GetUserGroup(uid)
+	if groupId == 0 {
+		return false
+	}
+
+	var mem GroupsUser
+	result := db.Where("group_id = ? and is_creator = ? and is_del = ?", groupId, 0, 0).First(&mem)
 
 	// no member in group, delete it
-	if memId == 0 {
+	if result.Error == gorm.ErrRecordNotFound {
 		db.Model(GroupsUser{}).Where("group_id = ? and is_creator = ?", groupId, 1).Updates(map[string]interface{}{"is_del": 1, "leave_time": int(time.Now().Unix())})
 		db.Model(Groups{}).Where("id = ?", groupId).Update("is_del", 1)
 		return true
