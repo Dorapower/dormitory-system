@@ -33,16 +33,22 @@ func JoinTeamHandler(ctx *gin.Context) {
 	case 1:
 		ctx.JSON(500, gin.H{
 			"code":    500,
-			"message": "invite code wrong",
+			"message": "already have a group",
 			"data":    gin.H{},
 		})
 	case 2:
 		ctx.JSON(500, gin.H{
 			"code":    500,
-			"message": "gender does not match",
+			"message": "invite code wrong",
 			"data":    gin.H{},
 		})
 	case 3:
+		ctx.JSON(500, gin.H{
+			"code":    500,
+			"message": "gender does not match",
+			"data":    gin.H{},
+		})
+	case 4:
 		ctx.JSON(500, gin.H{
 			"code":    500,
 			"message": "target team is full",
