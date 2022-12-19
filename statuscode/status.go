@@ -28,6 +28,6 @@ const (
 	StatusMisMatchedGender  = 513004 // Gender Mismatches
 	StatusTeamIsFull        = 513005 // Team is full
 	// Order Module
-
+	StatusCreateOrderFailed = 514001 // Create order failed
 	// Sys Module
 )

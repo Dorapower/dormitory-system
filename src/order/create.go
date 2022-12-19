@@ -38,6 +38,14 @@ func CreateHandler(ctx *gin.Context) {
 		rabbitmq.PublishOrderMessage(msg)
 	*/
 	orderId := model.CreateOrder(uid, *request.GroupId, request.BuildingId, int(time.Now().Unix()))
+	if orderId == -1 {
+		ctx.JSON(http.StatusOK, gin.H{
+			"code":    statuscode.StatusCreateOrderFailed,
+			"message": "create order failed",
+			"data":    gin.H{},
+		})
+		return
+	}
 	ctx.JSON(200, gin.H{
 		"code":    statuscode.StatusSuccess,
 		"message": "create order success",

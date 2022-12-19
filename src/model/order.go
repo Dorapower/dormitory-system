@@ -40,7 +40,7 @@ func DealPersonalOrder(uid, buildingId, submitTime int) int {
 	order.SubmitTime = submitTime
 	order.BuildingId = buildingId
 	order.Remarks = "none"
-	order.RoomId = 0
+	order.RoomId = 1
 
 	var mu sync.Mutex
 	mu.Lock()
@@ -52,7 +52,9 @@ func DealPersonalOrder(uid, buildingId, submitTime int) int {
 		order.ResultContent = "already have bed"
 		order.Status = 2
 		order.FinishTime = int(time.Now().Unix())
-		db.Create(&order)
+		if db.Create(&order).Error != nil {
+			return -1
+		}
 		return order.ID
 	}
 
@@ -82,13 +84,15 @@ func DealPersonalOrder(uid, buildingId, submitTime int) int {
 	}
 
 	// fail
-	if order.RoomId == 0 {
+	if order.RoomId == 1 {
 		order.ResultContent = "no available room"
 	}
 
 	order.Status = 1
 	order.FinishTime = int(time.Now().Unix())
-	db.Create(&order)
+	if db.Create(&order).Error != nil {
+		return -1
+	}
 	return order.ID
 }
 
@@ -113,7 +117,9 @@ func DealGroupOrder(uid, groupId, buildingId, submitTime int) int {
 		order.ResultContent = "already have room"
 		order.Status = 2
 		order.FinishTime = int(time.Now().Unix())
-		db.Create(&order)
+		if db.Create(&order).Error != nil {
+			return -1
+		}
 		return order.ID
 	}
 
@@ -154,7 +160,7 @@ func DealGroupOrder(uid, groupId, buildingId, submitTime int) int {
 	}
 
 	// fail
-	if order.RoomId == 0 {
+	if order.RoomId == 1 {
 		order.ResultContent = "no available room"
 		order.Status = 2
 	} else {
@@ -162,7 +168,9 @@ func DealGroupOrder(uid, groupId, buildingId, submitTime int) int {
 	}
 
 	order.FinishTime = int(time.Now().Unix())
-	db.Create(&order)
+	if db.Create(&order).Error != nil {
+		return -1
+	}
 	return order.ID
 }
 
