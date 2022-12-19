@@ -2,7 +2,9 @@ package team
 
 import (
 	"dormitory-system/src/model"
+	"dormitory-system/statuscode"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type CreateTeamRequest struct {
@@ -15,8 +17,8 @@ func CreateTeamHandler(ctx *gin.Context) {
 	var createTeamRequest CreateTeamRequest
 	err := ctx.ShouldBind(&createTeamRequest)
 	if err != nil {
-		ctx.JSON(400, gin.H{
-			"code":    1,
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code":    statuscode.StatusInvalidRequest,
 			"message": "bad request",
 			"data":    gin.H{},
 		})
@@ -25,8 +27,8 @@ func CreateTeamHandler(ctx *gin.Context) {
 	uid := ctx.Keys["uid"].(int)
 	created, ok := model.CreatGroup(uid, createTeamRequest.Name, createTeamRequest.Describe)
 	if ok {
-		ctx.JSON(200, gin.H{
-			"code":    200,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code":    statuscode.StatusSuccess,
 			"message": "create team success",
 			"data": gin.H{
 				"team_id":     created.TeamId,
@@ -34,8 +36,8 @@ func CreateTeamHandler(ctx *gin.Context) {
 			},
 		})
 	} else {
-		ctx.JSON(200, gin.H{
-			"code":    200,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code":    statuscode.StatusCreateTeamFailed,
 			"message": "already have a group",
 			"data":    gin.H{},
 		})

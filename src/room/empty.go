@@ -2,7 +2,9 @@ package room
 
 import (
 	"dormitory-system/src/model"
+	"dormitory-system/statuscode"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 func EmptyHandler(ctx *gin.Context) {
@@ -10,8 +12,8 @@ func EmptyHandler(ctx *gin.Context) {
 	uid := ctx.Keys["uid"].(int)
 	gender := model.GetUserByUid(uid).Gender
 	list := model.GetEmptyBeds(gender)
-	ctx.JSON(200, gin.H{
-		"code": 200,
+	ctx.JSON(http.StatusOK, gin.H{
+		"code": statuscode.StatusSuccess,
 		"msg":  "success",
 		"data": gin.H{
 			"rows": list,

@@ -2,24 +2,26 @@ package room
 
 import (
 	"dormitory-system/src/model"
+	"dormitory-system/statuscode"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"strconv"
 )
 
 func BuildingHandler(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Query("id"))
 	if err != nil {
-		ctx.JSON(400, gin.H{
-			"code": 400,
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code": statuscode.StatusInvalidRequest,
 			"msg":  "bad request",
 			"data": gin.H{},
 		})
 		return
 	}
 	info := model.GetBuildingInfo(id)
-	ctx.JSON(200,
+	ctx.JSON(http.StatusOK,
 		gin.H{
-			"code": 200,
+			"code": statuscode.StatusSuccess,
 			"msg":  "success",
 			"data": info,
 		})

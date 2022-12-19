@@ -2,9 +2,9 @@ package order
 
 import (
 	"dormitory-system/src/model"
-	"dormitory-system/src/rabbitmq"
-	"encoding/json"
+	"dormitory-system/statuscode"
 	"github.com/gin-gonic/gin"
+	"net/http"
 	"time"
 )
 
@@ -15,29 +15,31 @@ type CreateRequest struct {
 
 func CreateHandler(ctx *gin.Context) {
 	//create order
-	var createRequest CreateRequest
-	if err := ctx.Bind(&createRequest); err != nil {
-		ctx.JSON(400, gin.H{
-			"code":    1,
+	var request CreateRequest
+	if err := ctx.Bind(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code":    statuscode.StatusInvalidRequest,
 			"message": "bad request",
 			"data":    gin.H{},
 		})
 		return
 	}
 	uid := ctx.Keys["uid"].(int)
-	msg, err := json.Marshal(createRequest)
-	if err != nil {
-		ctx.JSON(500, gin.H{
-			"code":    2,
-			"message": "server error",
-			"data":    gin.H{},
-		})
-		return
-	}
-	rabbitmq.PublishOrderMessage(msg)
-	orderId := model.CreateOrder(uid, *createRequest.GroupId, createRequest.BuildingId, int(time.Now().Unix()))
+	/*
+		msg, err := json.Marshal(request)
+		if err != nil {
+			ctx.JSON(500, gin.H{
+				"code":    status.StatusServerError,
+				"message": "internal server error",
+				"data":    gin.H{},
+			})
+			return
+		}
+		rabbitmq.PublishOrderMessage(msg)
+	*/
+	orderId := model.CreateOrder(uid, *request.GroupId, request.BuildingId, int(time.Now().Unix()))
 	ctx.JSON(200, gin.H{
-		"code":    200,
+		"code":    statuscode.StatusSuccess,
 		"message": "create order success",
 		"data": gin.H{
 			"order_id": orderId,

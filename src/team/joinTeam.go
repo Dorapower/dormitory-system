@@ -2,7 +2,9 @@ package team
 
 import (
 	"dormitory-system/src/model"
+	"dormitory-system/statuscode"
 	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type JoinTeamRequest struct {
@@ -15,8 +17,8 @@ func JoinTeamHandler(ctx *gin.Context) {
 	var joinTeamRequest JoinTeamRequest
 	err := ctx.ShouldBind(&joinTeamRequest)
 	if err != nil {
-		ctx.JSON(400, gin.H{
-			"code":    1,
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code":    statuscode.StatusInvalidRequest,
 			"message": "bad request",
 			"data":    gin.H{},
 		})
@@ -25,32 +27,32 @@ func JoinTeamHandler(ctx *gin.Context) {
 	result := model.JoinGroup(uid, joinTeamRequest.InviteCode)
 	switch result {
 	case 0:
-		ctx.JSON(200, gin.H{
-			"code":    200,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code":    statuscode.StatusSuccess,
 			"message": "join team success",
 			"data":    gin.H{},
 		})
 	case 1:
-		ctx.JSON(500, gin.H{
-			"code":    500,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code":    statuscode.StatusJoinTeamFailed,
 			"message": "already have a group",
 			"data":    gin.H{},
 		})
 	case 2:
-		ctx.JSON(500, gin.H{
-			"code":    500,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code":    statuscode.StatusInvalidInviteCode,
 			"message": "invite code wrong",
 			"data":    gin.H{},
 		})
 	case 3:
-		ctx.JSON(500, gin.H{
-			"code":    500,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code":    statuscode.StatusMisMatchedGender,
 			"message": "gender does not match",
 			"data":    gin.H{},
 		})
 	case 4:
-		ctx.JSON(500, gin.H{
-			"code":    500,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code":    statuscode.StatusTeamIsFull,
 			"message": "target team is full",
 			"data":    gin.H{},
 		})

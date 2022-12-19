@@ -3,6 +3,7 @@ package auth
 import (
 	"dormitory-system/src/cache"
 	"dormitory-system/src/model"
+	"dormitory-system/statuscode"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
 	"net/http"
@@ -13,15 +14,15 @@ func LoginHandler(ctx *gin.Context) {
 	var user model.Users
 	if err := ctx.MustBindWith(&login, binding.JSON); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"code":    1,
+			"code":    statuscode.StatusInvalidRequest,
 			"message": "missing username or password",
 			"data":    gin.H{},
 		})
 		return
 	}
 	if user = checkLogin(login); user == (model.Users{}) {
-		ctx.JSON(http.StatusBadRequest, gin.H{
-			"code":    2,
+		ctx.JSON(http.StatusOK, gin.H{
+			"code":    statuscode.StatusWrongPassword,
 			"message": "wrong username or password",
 			"data":    gin.H{},
 		})
@@ -30,7 +31,7 @@ func LoginHandler(ctx *gin.Context) {
 	token, refreshToken, err := generateTokenPair(&user)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"code":    3,
+			"code":    statuscode.StatusServerError,
 			"message": "server error when generating tokens",
 			"data":    gin.H{},
 		})
@@ -39,14 +40,14 @@ func LoginHandler(ctx *gin.Context) {
 	err = cache.SetRefreshTokenCache(refreshToken, user.Uid)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
-			"code":    4,
+			"code":    statuscode.StatusServerError,
 			"message": "server error when caching refresh token",
 			"data":    gin.H{},
 		})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"code":    200,
+		"code":    statuscode.StatusSuccess,
 		"message": "login success",
 		"data": gin.H{
 			"access_token":  token,

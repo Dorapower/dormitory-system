@@ -2,8 +2,10 @@ package user
 
 import (
 	"dormitory-system/src/model"
+	"dormitory-system/statuscode"
 	"github.com/gin-gonic/gin"
 	"github.com/gin-gonic/gin/binding"
+	"net/http"
 )
 
 type PasswordRequest struct {
@@ -16,21 +18,21 @@ func PasswdHandler(ctx *gin.Context) {
 	var passwordRequest PasswordRequest
 	err := ctx.MustBindWith(&passwordRequest, binding.JSON)
 	if err != nil {
-		ctx.JSON(400, gin.H{
-			"error_code": 1,
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"error_code": statuscode.StatusInvalidRequest,
 			"message":    "bad request",
 		})
 	}
 	uid := ctx.Keys["uid"].(int)
 	if model.ChangePwd(uid, passwordRequest.OldPassword, passwordRequest.NewPassword) == false {
-		ctx.JSON(500, gin.H{
-			"code":    2,
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code":    statuscode.StatusWrongPassword,
 			"message": "old password is wrong",
 		})
 		return
 	}
-	ctx.JSON(200, gin.H{
-		"code":    200,
+	ctx.JSON(http.StatusOK, gin.H{
+		"code":    statuscode.StatusSuccess,
 		"message": "change password success",
 	})
 }
