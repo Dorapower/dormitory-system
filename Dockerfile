@@ -10,6 +10,7 @@ RUN go env -w GOPROXY=https://goproxy.cn
 RUN go mod download
 
 COPY src ./src
+COPY statuscode ./statuscode
 COPY .env ./
 RUN go build -o /dormitory_system ./src/cmd/dormitory_system
 
