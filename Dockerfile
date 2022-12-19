@@ -3,7 +3,6 @@
 FROM golang:1.19.1-bullseye
 
 ENV GO111MODULE=on
-ENV API_PORT=8091
 
 WORKDIR /app
 COPY go.mod go.sum ./
