@@ -11,8 +11,8 @@ func ListHandler(ctx *gin.Context) {
 	uid := ctx.Keys["uid"].(int)
 	orderList := model.GetOrderList(uid)
 	ctx.JSON(http.StatusOK, gin.H{
-		"code": statuscode.StatusSuccess,
-		"msg":  "success",
+		"code":    statuscode.StatusSuccess,
+		"message": "success",
 		"data": gin.H{
 			"rows": orderList,
 		},

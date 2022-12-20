@@ -10,8 +10,8 @@ import (
 func BuildingListHandler(ctx *gin.Context) {
 	list := model.GetBuildingList()
 	ctx.JSON(http.StatusOK, gin.H{
-		"code": statuscode.StatusSuccess,
-		"msg":  "success",
+		"code":    statuscode.StatusSuccess,
+		"message": "success",
 		"data": gin.H{
 			"rows": list,
 		},

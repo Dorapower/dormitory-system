@@ -11,8 +11,8 @@ func GroupNumHandler(ctx *gin.Context) {
 	groupLimit := model.GetSystemConfigByKey("group_limit").KeyValue
 	groupNum := model.GetSystemConfigByKey("group_num").KeyValue
 	ctx.JSON(http.StatusOK, gin.H{
-		"code": statuscode.StatusSuccess,
-		"msg":  "success",
+		"code":    statuscode.StatusSuccess,
+		"message": "success",
 		"data": gin.H{
 			"group_limit": groupLimit,
 			"group_num":   groupNum,

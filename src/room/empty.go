@@ -13,10 +13,10 @@ func EmptyHandler(ctx *gin.Context) {
 	gender := model.GetUserByUid(uid).Gender
 	list := model.GetEmptyBeds(gender)
 	ctx.JSON(http.StatusOK, gin.H{
-		"code": statuscode.StatusSuccess,
-		"msg":  "success",
+		"code":    statuscode.StatusSuccess,
+		"message": "success",
 		"data": gin.H{
-			"rows": list,
+			"row": list,
 		},
 	})
 }

@@ -10,8 +10,8 @@ import (
 func ClassLimitHandler(ctx *gin.Context) {
 	classLimit := model.GetSystemConfigByKey("class_limit").KeyValue
 	ctx.JSON(http.StatusOK, gin.H{
-		"code": statuscode.StatusSuccess,
-		"msg":  "success",
+		"code":    statuscode.StatusSuccess,
+		"message": "success",
 		"data": gin.H{
 			"class_limit": classLimit,
 		},

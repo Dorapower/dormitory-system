@@ -46,7 +46,7 @@ func CreateHandler(ctx *gin.Context) {
 		})
 		return
 	}
-	ctx.JSON(200, gin.H{
+	ctx.JSON(http.StatusOK, gin.H{
 		"code":    statuscode.StatusSuccess,
 		"message": "create order success",
 		"data": gin.H{

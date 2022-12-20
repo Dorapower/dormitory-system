@@ -12,17 +12,17 @@ func BuildingHandler(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Query("id"))
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"code": statuscode.StatusInvalidRequest,
-			"msg":  "bad request",
-			"data": gin.H{},
+			"code":    statuscode.StatusInvalidRequest,
+			"message": "bad request",
+			"data":    gin.H{},
 		})
 		return
 	}
 	info := model.GetBuildingInfo(id)
 	ctx.JSON(http.StatusOK,
 		gin.H{
-			"code": statuscode.StatusSuccess,
-			"msg":  "success",
-			"data": info,
+			"code":    statuscode.StatusSuccess,
+			"message": "success",
+			"data":    info,
 		})
 }

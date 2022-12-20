@@ -10,7 +10,7 @@ import (
 func LogoutHandler(ctx *gin.Context) {
 	uid := ctx.Keys["uid"].(int)
 	if err := cache.DeleteRefreshTokenCache(uid); err != nil {
-		ctx.JSON(500, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"code":    1,
 			"message": "server error when deleting token",
 		})

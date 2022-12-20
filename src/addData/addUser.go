@@ -16,8 +16,8 @@ func AddUser(ctx *gin.Context) {
 	if err != nil {
 		log.Println(err)
 		ctx.JSON(http.StatusBadRequest, gin.H{
-			"code": 400,
-			"msg":  "参数错误",
+			"code":    400,
+			"message": "参数错误",
 		})
 		return
 	}
@@ -37,8 +37,8 @@ func AddUser(ctx *gin.Context) {
 	}
 	db.Create(&userInfo)
 	ctx.JSON(http.StatusOK, gin.H{
-		"code": 200,
-		"msg":  "增加成功",
+		"code":    200,
+		"message": "增加成功",
 	})
 	return
 }

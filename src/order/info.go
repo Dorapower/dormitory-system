@@ -21,8 +21,8 @@ func InfoHandler(ctx *gin.Context) {
 	}
 	info := model.GetOrderInfo(orderId)
 	ctx.JSON(http.StatusOK, gin.H{
-		"code": statuscode.StatusSuccess,
-		"msg":  "success",
-		"data": info,
+		"code":    statuscode.StatusSuccess,
+		"message": "success",
+		"data":    info,
 	})
 }
