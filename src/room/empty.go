@@ -16,7 +16,7 @@ func EmptyHandler(ctx *gin.Context) {
 		"code": statuscode.StatusSuccess,
 		"msg":  "success",
 		"data": gin.H{
-			"row": list,
+			"rows": list,
 		},
 	})
 }
