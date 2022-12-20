@@ -27,7 +27,7 @@ func InitRouter() *gin.Engine {
 
 	protected := router.Group("/")
 	protected.Use(middleware.JwtAuth())
-	protected.GET("/auth/logout", auth.LogoutHandler)
+	protected.POST("/auth/logout", auth.LogoutHandler)
 
 	protected.GET("/user/myinfo", user.MyInfoHandler)
 	protected.GET("/user/myroom", user.MyRoomHandler)
