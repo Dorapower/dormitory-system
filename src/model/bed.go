@@ -19,7 +19,7 @@ type Beds struct {
 }
 
 // GetMyRoomByUid : get my room's Name and roommates' Name
-func GetMyRoomByUid(uid int) (roomId int, roomName string, names []string) {
+func GetMyRoomByUid(uid int) (roomId int, roomName string, roomMate []map[string]string) {
 	var db = database.MysqlDb
 
 	// get room's id
@@ -29,7 +29,13 @@ func GetMyRoomByUid(uid int) (roomId int, roomName string, names []string) {
 	db.Model(Rooms{}).Select("Name").Where("id = ?", roomId).Scan(&roomName)
 
 	// get roommate's Name
+	var names []string
 	db.Model(Users{}).Select("Name").Where("uid IN (?)", db.Model(Beds{}).Select("uid").Where("room_id = ?", roomId)).Scan(&names)
+
+	for _, name := range names {
+		m := map[string]string{"name": name}
+		roomMate = append(roomMate, m)
+	}
 
 	return
 }
