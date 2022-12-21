@@ -43,6 +43,12 @@ func CreatGroup(uid int, name, describe string) (CreatGroupApi, bool) {
 	}
 
 	var db = database.MysqlDb
+	var roomId int
+	db.Model(Beds{}).Select("room_id").Where("uid = ? and is_valid = ? and is_del = ? and status = ?", uid, 1, 0, 1).Scan(&roomId)
+	if roomId != 0 {
+		return CreatGroupApi{}, false
+	}
+
 	var cApi CreatGroupApi
 	var group Groups
 	var code string
