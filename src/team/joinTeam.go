@@ -35,7 +35,7 @@ func JoinTeamHandler(ctx *gin.Context) {
 	case 1:
 		ctx.JSON(http.StatusOK, gin.H{
 			"code":    statuscode.StatusJoinTeamFailed,
-			"message": "already have a group",
+			"message": "already have a group or room",
 			"data":    gin.H{},
 		})
 	case 2:
