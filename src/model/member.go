@@ -46,10 +46,16 @@ func JoinGroup(uid int, inviteCode string) int {
 		return 1
 	}
 
+	// check room
+	var roomId int
+	db.Model(Beds{}).Select("room_id").Where("uid = ? and is_valid = ? and is_del = ? and status = ?", uid, 1, 0, 1).Scan(&roomId)
+	if roomId != 0 {
+		return 1
+	}
+
 	// get group's inviteCode
-	var code string
-	db.Model(Groups{}).Select("invite_code").Where("id = ?", groupId).Scan(&code)
-	if code != inviteCode {
+	db.Model(Groups{}).Select("id").Where("invite_code = ?", inviteCode).Scan(&groupId)
+	if groupId == 0 {
 		return 2
 	}
 
@@ -97,7 +103,15 @@ func QuitGroup(uid int) bool {
 	}
 
 	var db = database.MysqlDb
-	result := db.Model(GroupsUser{}).Where("uid = ? and group_id = ?", uid, groupId).Updates(map[string]interface{}{"is_del": 1, "leave_time": int(time.Now().Unix())})
+
+	// if creator, delete it
+	var groupUser GroupsUser
+	db.Where("uid = ? and group_id = ?", uid, groupId).First(&groupUser)
+	if groupUser.IsCreator == 1 {
+		return DelGroup(uid)
+	}
+
+	result := db.Model(&groupUser).Updates(map[string]interface{}{"is_del": 1, "leave_time": int(time.Now().Unix())})
 	if result.Error != nil {
 		return false
 	}
@@ -148,6 +162,13 @@ func TransferGroup(uid int, sId string) bool {
 	var groupId int
 	groupId = GetUserGroup(uid)
 	if groupId == 0 {
+		return false
+	}
+
+	// if not creator, failed
+	var groupUser GroupsUser
+	db.Where("uid = ? and group_id = ? and is_del = ?", uid, groupId, 0).First(&groupUser)
+	if groupUser.IsCreator == 0 {
 		return false
 	}
 
