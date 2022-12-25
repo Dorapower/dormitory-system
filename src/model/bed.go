@@ -10,7 +10,7 @@ type Beds struct {
 	ID       int `gorm:"primaryKey;autoIncrement"`
 	Uid      int `gorm:"default:0"`
 	RoomId   int
-	Name     int
+	Name     string
 	OrderNum int
 	IsValid  int `gorm:"default:1"`
 	Remarks  string
