@@ -31,7 +31,23 @@ func CreateOrder(uid, groupId, buildingId, submitTime int) int {
 	}
 	return orderId
 }
-
+func MatchUserGroup(uid, groupId int) bool {
+	var db = database.MysqlDb
+	var groupids []int
+	db.Model(GroupsUser{}).Select("group_id").Where("uid = ? and is_del = ?", uid, 0).Scan(&groupids)
+	for _, id := range groupids {
+		if id == groupId {
+			return true
+		}
+		if groupId == 0 { // is in a group but send request to create personal order
+			return false
+		}
+	}
+	if groupId == 0 { // is not in a group and send request to create personal order
+		return true
+	}
+	return false
+}
 func DealPersonalOrder(uid, buildingId, submitTime int) int {
 	var db = database.MysqlDb
 	var order Orders

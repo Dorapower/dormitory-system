@@ -25,6 +25,14 @@ func CreateHandler(ctx *gin.Context) {
 		return
 	}
 	uid := ctx.Keys["uid"].(int)
+	if !model.MatchUserGroup(uid, *request.GroupId) {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"code":    statuscode.StatusInvalidRequest,
+			"message": "your group id is not match",
+			"data":    gin.H{},
+		})
+		return
+	}
 	/*
 		msg, err := json.Marshal(request)
 		if err != nil {
