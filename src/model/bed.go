@@ -1,9 +1,8 @@
 package model
 
 import (
-	"database/sql"
+	"dormitory-system/src/cache"
 	"dormitory-system/src/database"
-	"log"
 )
 
 type Beds struct {
@@ -49,27 +48,30 @@ type EmptyBedsApi struct {
 // GetEmptyBeds : get all empty beds grouped by building's id according to gender
 func GetEmptyBeds(gender int) (list []EmptyBedsApi) {
 	var db = database.MysqlDb
+
 	// get all valid building's id
-	rows, _ := db.Model(Rooms{}).Select("building_id").Distinct("building_id").Where("is_valid = ? and gender = ? and building_id IN (?)", 1, gender, db.Model(Buildings{}).Select("building_id").Where("is_valid = ?", 1)).Rows()
-	defer func(rows *sql.Rows) {
-		err := rows.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}(rows)
+	var bIds []int
+	db.Model(Rooms{}).Select("building_id").Distinct("building_id").Where("is_valid = ? and gender = ? and building_id IN (?)", 1, gender, db.Model(Buildings{}).Select("building_id").Where("is_valid = ? and is_del = ?", 1, 0)).Scan(&bIds)
 
 	// calculate every building's empty beds
-	for rows.Next() {
+	for _, bId := range bIds {
 		// bId : current building's id
-		var bId int
-		err := db.ScanRows(rows, &bId)
-		if err != nil {
-			return nil
-		}
 
 		// cnt : all empty beds. gorm required int64
 		var cnt int64
-		db.Model(Beds{}).Where("is_valid = ? and is_del = ? and status = ? and room_id IN (?)", 1, 0, 0, db.Model(Rooms{}).Select("id").Where("gender = ? and building_id = ?", gender, bId)).Count(&cnt)
+		cnt = 0
+		var roomIds []int
+		db.Model(Rooms{}).Select("id").Where("building_id = ? and gender = ? and is_valid = ? and is_del = ?", bId, gender, 1, 0).Scan(&roomIds)
+		// calculate every room's empty beds
+		for _, roomId := range roomIds {
+			var bedCnt int64
+			db.Model(Beds{}).Where("is_valid = ? and is_del = ? and status = ? and room_id = ?", 1, 0, 0, roomId).Count(&bedCnt)
+			_ = cache.SetRoomCache(roomId, int(bedCnt))
+			cnt += bedCnt
+		}
+
+		// set building cache
+		_ = cache.SetBuildingCache(bId, gender, int(cnt))
 
 		emptyBeds := EmptyBedsApi{
 			BuildingId: bId,
