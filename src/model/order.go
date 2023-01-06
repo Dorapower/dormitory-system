@@ -1,6 +1,7 @@
 package model
 
 import (
+	"dormitory-system/src/cache"
 	"dormitory-system/src/database"
 	"sync"
 	"time"
@@ -23,11 +24,40 @@ type Orders struct {
 
 // CreateOrder : creat group's or personal order
 func CreateOrder(uid, groupId, buildingId, submitTime int) int {
+	var db = database.MysqlDb
 	var orderId int
-	if groupId == 0 {
+	var gender int
+
+	db.Model(Users{}).Select("gender").Where("uid = ?", uid).Scan(&gender)
+	bedCount := cache.GetBuildingCache(buildingId, gender)
+
+	var stuCnt int64 // group members count
+	db.Model(GroupsUser{}).Select("uid").Where("group_id = ? and is_del = ?", groupId, 0).Count(&stuCnt)
+
+	if groupId == 0 && bedCount > 0 {
+		//TODO: to queue
+
 		orderId = DealPersonalOrder(uid, buildingId, submitTime)
-	} else {
+	} else if groupId != 0 && bedCount >= int(stuCnt) {
+		//TODO: to queue
+
 		orderId = DealGroupOrder(uid, groupId, buildingId, submitTime)
+	} else { // no bed to choose
+		var order Orders
+		order.CreateTime = int(time.Now().Unix())
+		order.Uid = uid
+		order.SubmitTime = submitTime
+		order.BuildingId = buildingId
+		order.Remarks = "none"
+		order.RoomId = 0
+		order.ResultContent = "no available room"
+		order.Status = 1
+		order.FinishTime = int(time.Now().Unix())
+		order.GroupId = groupId
+		if db.Create(&order).Error != nil {
+			return -1
+		}
+		return order.ID
 	}
 	return orderId
 }
@@ -56,7 +86,7 @@ func DealPersonalOrder(uid, buildingId, submitTime int) int {
 	order.SubmitTime = submitTime
 	order.BuildingId = buildingId
 	order.Remarks = "none"
-	order.RoomId = 1
+	order.RoomId = 0
 
 	var mu sync.Mutex
 	mu.Lock()
@@ -95,12 +125,19 @@ func DealPersonalOrder(uid, buildingId, submitTime int) int {
 			order.ResultContent = "success: " + roomName
 			// update bed's information
 			db.Model(&bed).Updates(map[string]interface{}{"uid": uid, "status": 1})
+
+			// update cache
+			roomCache := cache.GetRoomCache(roomId)
+			_ = cache.SetRoomCache(roomCache, roomCache-1)
+			buildingCache := cache.GetBuildingCache(buildingId, gender)
+			_ = cache.SetBuildingCache(buildingId, gender, buildingCache-1)
+
 			break
 		}
 	}
 
 	// fail
-	if order.RoomId == 1 {
+	if order.RoomId == 0 {
 		order.ResultContent = "no available room"
 	}
 
@@ -152,11 +189,11 @@ func DealGroupOrder(uid, groupId, buildingId, submitTime int) int {
 	db.Model(Rooms{}).Select("id").Where("building_id = ? and gender = ? and is_valid = ? and is_del = ?", buildingId, gender, 1, 0).Order("order_num").Scan(&roomIds)
 
 	for _, roomId := range roomIds {
-		var bedCnt int64 // room's optional beds
-		db.Model(Beds{}).Where("room_id = ? and is_valid = ? and is_del = ? and status = ?", roomId, 1, 0, 0).Count(&bedCnt)
+		var bedCnt int // room's available beds
+		bedCnt = cache.GetRoomCache(roomId)
 
 		// if beds number >= people number
-		if bedCnt >= stuCnt {
+		if bedCnt >= int(stuCnt) {
 			var bedIds []int
 			db.Model(Beds{}).Limit(int(stuCnt)).Select("id").Where("room_id = ? and is_valid = ? and is_del = ? and status = ?", roomId, 1, 0, 0).Order("order_num").Scan(&bedIds)
 			order.RoomId = roomId
@@ -171,12 +208,18 @@ func DealGroupOrder(uid, groupId, buildingId, submitTime int) int {
 			for i := 0; i < int(stuCnt); i++ {
 				db.Model(Beds{}).Where("id = ?", bedIds[i]).Updates(map[string]interface{}{"uid": uIds[i], "status": 1})
 			}
+
+			// update cache
+			roomCache := cache.GetRoomCache(roomId)
+			_ = cache.SetRoomCache(roomCache, roomCache-1)
+			buildingCache := cache.GetBuildingCache(buildingId, gender)
+			_ = cache.SetBuildingCache(buildingId, gender, buildingCache-1)
 			break
 		}
 	}
 
 	// fail
-	if order.RoomId == 1 {
+	if order.RoomId == 0 {
 		order.ResultContent = "no available room"
 		order.Status = 2
 	} else {
