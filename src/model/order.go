@@ -3,6 +3,8 @@ package model
 import (
 	"dormitory-system/src/cache"
 	"dormitory-system/src/database"
+	"dormitory-system/src/rabbitmq"
+	"encoding/json"
 	"sync"
 	"time"
 )
@@ -22,6 +24,35 @@ type Orders struct {
 	Status        int `gorm:"default:0"`
 }
 
+type OrderMessage struct {
+	Uid        int `json:"uid"`
+	GroupId    int `json:"group_id"`
+	BuildingId int `json:"building_id"`
+	SubmitTime int `json:"submit_time"`
+}
+
+func encodeMessage(uid, groupId, buildingId, submitTime int) []byte {
+	var orderMessage = OrderMessage{
+		Uid:        uid,
+		GroupId:    groupId,
+		BuildingId: buildingId,
+		SubmitTime: submitTime,
+	}
+	msg, err := json.Marshal(orderMessage)
+	if err != nil {
+		return nil
+	}
+	return msg
+}
+func decodeMessage(msg []byte) *OrderMessage {
+	var orderMessage OrderMessage
+	err := json.Unmarshal(msg, &orderMessage)
+	if err != nil {
+		return nil
+	}
+	return &orderMessage
+}
+
 // CreateOrder : creat group's or personal order
 func CreateOrder(uid, groupId, buildingId, submitTime int) int {
 	var db = database.MysqlDb
@@ -35,13 +66,15 @@ func CreateOrder(uid, groupId, buildingId, submitTime int) int {
 	db.Model(GroupsUser{}).Select("uid").Where("group_id = ? and is_del = ?", groupId, 0).Count(&stuCnt)
 
 	if groupId == 0 && bedCount > 0 {
-		//TODO: to queue
+		msg := encodeMessage(uid, groupId, buildingId, submitTime)
+		rabbitmq.PublishOrderMessage(msg)
 
-		orderId = DealPersonalOrder(uid, buildingId, submitTime)
+		orderId = DealPersonalOrder(uid, buildingId, submitTime, -1)
 	} else if groupId != 0 && bedCount >= int(stuCnt) {
-		//TODO: to queue
+		msg := encodeMessage(uid, groupId, buildingId, submitTime)
+		rabbitmq.PublishOrderMessage(msg)
 
-		orderId = DealGroupOrder(uid, groupId, buildingId, submitTime)
+		orderId = DealGroupOrder(uid, groupId, buildingId, submitTime, -1)
 	} else { // no bed to choose
 		var order Orders
 		order.CreateTime = int(time.Now().Unix())
@@ -78,7 +111,7 @@ func MatchUserGroup(uid, groupId int) bool {
 	}
 	return false
 }
-func DealPersonalOrder(uid, buildingId, submitTime int) int {
+func DealPersonalOrder(uid, buildingId, submitTime int, orderId int) int {
 	var db = database.MysqlDb
 	var order Orders
 	order.CreateTime = int(time.Now().Unix())
@@ -87,7 +120,16 @@ func DealPersonalOrder(uid, buildingId, submitTime int) int {
 	order.BuildingId = buildingId
 	order.Remarks = "none"
 	order.RoomId = 0
+	if orderId == -1 {
+		order.ResultContent = "pending"
+		order.Status = 9
+		if db.Create(&order).Error != nil {
+			return -1
+		}
+		return order.ID
+	}
 
+	// orderId exist
 	var mu sync.Mutex
 	mu.Lock()
 	defer mu.Unlock()
@@ -149,7 +191,7 @@ func DealPersonalOrder(uid, buildingId, submitTime int) int {
 	return order.ID
 }
 
-func DealGroupOrder(uid, groupId, buildingId, submitTime int) int {
+func DealGroupOrder(uid, groupId, buildingId, submitTime int, orderId int) int {
 	var db = database.MysqlDb
 	var order Orders
 	order.CreateTime = int(time.Now().Unix())
@@ -160,6 +202,16 @@ func DealGroupOrder(uid, groupId, buildingId, submitTime int) int {
 	order.Uid = uid
 	order.RoomId = 0
 
+	if orderId == -1 {
+		order.ResultContent = "pending"
+		order.Status = 9
+		if db.Create(&order).Error != nil {
+			return -1
+		}
+		return order.ID
+	}
+
+	// orderId exist
 	var mu sync.Mutex
 	mu.Lock()
 	defer mu.Unlock()

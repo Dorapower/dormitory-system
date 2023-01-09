@@ -33,18 +33,16 @@ func CreateHandler(ctx *gin.Context) {
 		})
 		return
 	}
-	/*
-		msg, err := json.Marshal(request)
-		if err != nil {
-			ctx.JSON(500, gin.H{
-				"code":    status.StatusServerError,
-				"message": "internal server error",
-				"data":    gin.H{},
-			})
-			return
-		}
-		rabbitmq.PublishOrderMessage(msg)
-	*/
+	//msg, err := json.Marshal(request)
+	//if err != nil {
+	//	ctx.JSON(500, gin.H{
+	//		"code":    status.StatusServerError,
+	//		"message": "internal server error",
+	//		"data":    gin.H{},
+	//	})
+	//	return
+	//}
+	//rabbitmq.PublishOrderMessage(msg)
 	orderId := model.CreateOrder(uid, *request.GroupId, request.BuildingId, int(time.Now().Unix()))
 	if orderId == -1 {
 		ctx.JSON(http.StatusOK, gin.H{
