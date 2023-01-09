@@ -29,6 +29,7 @@ func Connect() {
 	if err != nil {
 		log.Fatalln("Error when trying to create channel: " + err.Error())
 	}
+	OrderChannel = ch
 	//create queue
 	_, err = ch.QueueDeclare(
 		OrderQueueName, // name
