@@ -5,6 +5,7 @@ import (
 	"dormitory-system/src/database"
 	"dormitory-system/src/rabbitmq"
 	"encoding/json"
+	"log"
 	"sync"
 	"time"
 )
@@ -328,4 +329,31 @@ func GetOrderInfo(orderId int) (oIA OrderInfoApi) {
 	var db = database.MysqlDb
 	db.Model(Orders{}).Select("status", "room_id").Where("id = ?", orderId).Scan(&oIA)
 	return
+}
+
+func ConsumeFromQueue() {
+	msg, err := rabbitmq.OrderChannel.Consume(
+		rabbitmq.OrderQueueName,
+		"",
+		true,
+		false,
+		false,
+		false,
+		nil,
+	)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	go func() {
+		for d := range msg {
+			orderMessage := decodeMessage(d.Body)
+			log.Println(orderMessage)
+			if orderMessage.GroupId == 0 {
+				DealPersonalOrder(orderMessage.Uid, orderMessage.BuildingId, orderMessage.SubmitTime, 0)
+			} else {
+				DealGroupOrder(orderMessage.Uid, orderMessage.GroupId, orderMessage.BuildingId, orderMessage.SubmitTime, 0)
+			}
+		}
+	}()
 }
